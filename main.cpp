@@ -2,9 +2,14 @@
 #include <filesystem>
 #include <iostream>
 
-#include "configuration.hpp"
+#include "Compilation/AlgorithmCompilationInput.hpp"
+#include "Configuration.hpp"
+#include "Compilation/Compiler.hpp"
+#include "Compilation/Linker.hpp"
+#include "Compilation/ProjectCompilationInput.hpp"
 
-int main(int argc, char* argv[])
+
+int main(const int argc, char* argv[])
 {
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))
     {
@@ -12,7 +17,28 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    configuration config = configuration::parse(argc, argv);
+    Configuration config = Configuration::parse(argc, argv);
+
+    Compiler compiler{};
+    Linker linker{};
+
+    ProjectCompilationInput project_input(config);
+    if (project_input.compilationNeeded())
+    {
+        compiler.compile(project_input);
+        linker.link(project_input);
+
+        project_input.clean();
+    }
+
+    AlgorithmCompilationInput algorithm_input(config);
+    if (algorithm_input.compilationNeeded())
+    {
+        compiler.compile(algorithm_input);
+        linker.link(algorithm_input);
+
+        algorithm_input.clean();
+    }
 
     std::cout << "Hello, World!" << std::endl;
     return 0;
