@@ -18,6 +18,8 @@ protected:
     std::vector<std::filesystem::path> inputDependencies() override;
 
 private:
+    static void emitHeader(std::stringstream& stream);
+
     Configuration& config_;
 };
 

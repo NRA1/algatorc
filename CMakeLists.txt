@@ -25,9 +25,13 @@ add_executable(algatorc main.cpp
         Compilation/ProjectCompilationInput.cpp
         Compilation/ProjectCompilationInput.hpp
         Compilation/AlgorithmCompilationInput.cpp
-        Compilation/AlgorithmCompilationInput.hpp)
+        Compilation/AlgorithmCompilationInput.hpp
+        DynamicLibrary.cpp
+        DynamicLibrary.hpp)
 target_compile_definitions(algatorc PUBLIC ALGATORC)
-target_link_libraries(algatorc PRIVATE clang)
+target_link_libraries(algatorc PRIVATE clang clang-cpp)
+target_link_libraries(algatorc PRIVATE LLVM)
+target_link_libraries(algatorc PRIVATE lldCommon lldELF)
 
 add_executable(algatorcpp main.cpp
         Configuration.cpp
@@ -47,7 +51,9 @@ add_executable(algatorcpp main.cpp
         Compilation/ProjectCompilationInput.cpp
         Compilation/ProjectCompilationInput.hpp
         Compilation/AlgorithmCompilationInput.cpp
-        Compilation/AlgorithmCompilationInput.hpp)
+        Compilation/AlgorithmCompilationInput.hpp
+        DynamicLibrary.cpp
+        DynamicLibrary.hpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
 target_link_libraries(algatorcpp PRIVATE clang clang-cpp)
 target_link_libraries(algatorcpp PRIVATE LLVM)

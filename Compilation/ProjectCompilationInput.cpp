@@ -36,6 +36,7 @@ std::filesystem::path ProjectCompilationInput::outputFilePath()
 std::string ProjectCompilationInput::buildInputFile()
 {
     std::stringstream stream;
+    emitHeader(stream);
     stream << "#include " << config_.inputSrcFilePath() << "\n";
     stream << "#include " << config_.outputSrcFilePath() << "\n";
     stream << "#include " << config_.dataConverterSrcFilePath() << "\n";
@@ -50,3 +51,24 @@ std::vector<std::filesystem::path> ProjectCompilationInput::inputDependencies()
     dependencies.push_back(config_.dataConverterSrcFilePath());
     return dependencies;
 }
+
+#ifdef ALGATORCPP
+void ProjectCompilationInput::emitHeader(std::stringstream& stream)
+{
+    stream << "class input;\n";
+    stream << "class output;\n";
+    stream << "extern \"C\" {\n";
+    stream << "    input* deserialize_input(char* bytes, unsigned int n);\n";
+    stream << "    char* serialize_output(output* output, unsigned int *n);\n";
+    stream << "}\n";
+}
+#endif
+#ifdef ALGATORC
+void ProjectCompilationInput::emitHeader(std::stringstream& stream)
+{
+    stream << "struct input;\n";
+    stream << "struct output;\n";
+    stream << "struct input* deserialize_input(char* bytes, unsigned int n);\n";
+    stream << "char* serialize_output(struct output* output, unsigned int *n);\n";
+}
+#endif

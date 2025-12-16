@@ -5,7 +5,7 @@
 
 #ifdef ALGATORC
 
-#define SOURCE_DIR_NAME "c-src"
+#define PROJECT_SOURCE_DIR_NAME "c-src"
 #define SOURCE_EXTENSION ".c"
 
 #endif

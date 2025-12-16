@@ -5,6 +5,8 @@
 #include <llvm/ADT/IntrusiveRefCntPtr.h>
 #include <llvm/Support/VirtualFileSystem.h>
 
+#include "../DynamicLibrary.hpp"
+
 
 class CompilationInput
 {
@@ -16,6 +18,7 @@ public:
     llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> inputFileSystem();
 
     bool compilationNeeded();
+    DynamicLibrary loadDynamicLibrary();
 
     void clean();
 

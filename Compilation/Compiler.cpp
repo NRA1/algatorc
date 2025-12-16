@@ -26,10 +26,17 @@ Compiler::Compiler()
 
     std::vector<std::string> default_args;
     default_args.push_back(clang_path.get());
+
+    default_args.emplace_back("-fPIC");
+#ifdef ALGATORCPP
     default_args.emplace_back("-std=c++23");
     default_args.emplace_back("-stdlib=libstdc++");
-    default_args.emplace_back("-fPIC");
     default_args.emplace_back("-xc++");
+#endif
+#ifdef ALGATORC
+    default_args.emplace_back("-std=c23");
+    default_args.emplace_back("-xc");
+#endif
 
     default_args_ = default_args;
 }
@@ -59,6 +66,7 @@ void Compiler::compile(CompilationInput& input)
     const std::shared_ptr invocation = clang::createInvocation(args, invocation_options);
 
     clang::LangOptions& lang_options = invocation->getLangOpts();
+#ifdef ALGATORCPP
     lang_options.CXXExceptions = 1;
     lang_options.Bool = 1;
     lang_options.CPlusPlus = 1;
@@ -68,6 +76,18 @@ void Compiler::compile(CompilationInput& input)
     lang_options.CPlusPlus20 = 1;
     lang_options.CPlusPlus23 = 1;
     lang_options.LangStd = clang::LangStandard::Kind::lang_cxx23;
+#endif
+#ifdef ALGATORC
+    lang_options.CXXExceptions = 0;
+    lang_options.Bool = 0;
+    lang_options.CPlusPlus = 0;
+    lang_options.CPlusPlus11 = 0;
+    lang_options.CPlusPlus14 = 0;
+    lang_options.CPlusPlus17 = 0;
+    lang_options.CPlusPlus20 = 0;
+    lang_options.CPlusPlus23 = 0;
+    lang_options.LangStd = clang::LangStandard::Kind::lang_c23;
+#endif
 
     clang::CompilerInstance instance(invocation);
     instance.setDiagnostics(&*diagnostic_engine);

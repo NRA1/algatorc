@@ -9,7 +9,7 @@ AlgorithmCompilationInput::AlgorithmCompilationInput(Configuration& config) : co
         if (!std::filesystem::exists(config.temporaryDir()))
             std::filesystem::create_directories(config.temporaryDir());
 
-        if (!std::filesystem::exists(config.projectBinDir()))
+        if (!std::filesystem::exists(config.algorithmBinDir()))
             std::filesystem::create_directories(config.algorithmBinDir());
     }
     catch (std::filesystem::filesystem_error& e)
@@ -36,6 +36,7 @@ std::filesystem::path AlgorithmCompilationInput::outputFilePath()
 std::string AlgorithmCompilationInput::buildInputFile()
 {
     std::stringstream stream;
+    emitHeader(stream);
     stream << "#include " << config_.inputSrcFilePath() << "\n";
     stream << "#include " << config_.outputSrcFilePath() << "\n";
     stream << "#include " << config_.algorithmSrcFilePath() << "\n";
@@ -51,3 +52,21 @@ std::vector<std::filesystem::path> AlgorithmCompilationInput::inputDependencies(
     return dependencies;
 }
 
+#ifdef ALGATORCPP
+void AlgorithmCompilationInput::emitHeader(std::stringstream& stream)
+{
+    stream << "class input;\n";
+    stream << "class output;\n";
+    stream << "extern \"C\" {\n";
+    stream << "    output* execute(input* input);\n";
+    stream << "}\n";
+}
+#endif
+#ifdef ALGATORC
+void AlgorithmCompilationInput::emitHeader(std::stringstream& stream)
+{
+    stream << "struct input;\n";
+    stream << "struct output;\n";
+    stream << "struct output* execute(struct input* input);\n";
+}
+#endif

@@ -26,6 +26,18 @@ bool CompilationInput::compilationNeeded()
     return max_input_write_time >= output_write_time;
 }
 
+DynamicLibrary CompilationInput::loadDynamicLibrary()
+{
+    const std::filesystem::path path = outputFilePath();
+    if (!std::filesystem::exists(path))
+    {
+        error(ErrorType::System, ErrorPhase::Execution, "Tried to load dynamic library from path ")
+        << path << " but the path does not exist";
+    }
+
+    return DynamicLibrary(path);
+}
+
 void CompilationInput::clean()
 {
     if (std::filesystem::exists(objFilePath()))

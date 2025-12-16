@@ -5,6 +5,7 @@
 #include <clang/Basic/DiagnosticOptions.h>
 
 #include "CompilationInput.hpp"
+#include "../DynamicLibrary.hpp"
 
 #ifdef ALGATORC
 #define CLANG_BINARY_NAME "clang"
