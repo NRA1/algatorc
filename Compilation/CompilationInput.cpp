@@ -7,10 +7,17 @@ std::filesystem::path CompilationInput::objFilePath()
     return inputFilePath().replace_extension(".o");
 }
 
-llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> CompilationInput::inputFileSystem()
+void CompilationInput::writeInputFile()
 {
-    buildVFSIfNotBuilt();
-    return overlay_.value();
+    const std::string input = buildInputFile();
+    std::ofstream file;
+    file.open(inputFilePath(), std::ios::out | std::ios::trunc);
+    if (!file.is_open())
+        error(ErrorType::System, ErrorPhase::Compilation, "Failed to write generated input source file");
+    file << input;
+    file.close();
+    if (file.fail())
+        error(ErrorType::System, ErrorPhase::Compilation, "Failed to write generated input source file");
 }
 
 bool CompilationInput::compilationNeeded()
@@ -31,39 +38,8 @@ bool CompilationInput::compilationNeeded()
     return max_input_write_time >= output_write_time;
 }
 
-DynamicLibrary CompilationInput::loadDynamicLibrary()
-{
-    const std::filesystem::path path = outputFilePath();
-    if (!std::filesystem::exists(path))
-    {
-        error(ErrorType::System, ErrorPhase::Execution, "Tried to load dynamic library from path ")
-        << path << " but the path does not exist";
-    }
-
-    return DynamicLibrary(path);
-}
-
 void CompilationInput::clean()
 {
     if (std::filesystem::exists(objFilePath()))
         std::filesystem::remove(objFilePath());
-}
-
-void CompilationInput::buildVFSIfNotBuilt()
-{
-    if (overlay_ != std::nullopt) return;
-    input_file_ = buildInputFile();
-    const llvm::StringRef input_ref(input_file_.value());
-    std::unique_ptr<llvm::MemoryBuffer> input_buffer = llvm::MemoryBuffer::getMemBuffer(input_ref);
-
-    llvm::IntrusiveRefCntPtr memory_fs = llvm::IntrusiveRefCntPtr(new llvm::vfs::InMemoryFileSystem());
-    memory_fs->addFile(inputFilePath().string(), clock(), std::move(input_buffer));
-    memory_fs_ = memory_fs;
-
-    llvm::IntrusiveRefCntPtr overlay = llvm::IntrusiveRefCntPtr(new llvm::vfs::OverlayFileSystem(llvm::vfs::getRealFileSystem()));
-    overlay->pushOverlay(memory_fs);
-
-    if (overlay->setCurrentWorkingDirectory(inputFilePath().remove_filename().string()))
-        error(ErrorType::System, ErrorPhase::Compilation) << "Failed to set VFS cwd";
-    overlay_ = overlay;
 }

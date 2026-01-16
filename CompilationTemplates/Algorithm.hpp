@@ -1,6 +1,5 @@
 #ifndef ALGATORC_ALGORITHM_HPP
 #define ALGATORC_ALGORITHM_HPP
-#include <iostream>
 
 void __report_error(const char* error);
 
@@ -11,7 +10,7 @@ struct output;
 struct output* execute(struct input* input);
 
 // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile // inline functions are not exported as symbols
-output* __execute(struct input* input)
+struct output* __execute(struct input* input)
 {
     return execute(input);
 }
@@ -32,32 +31,17 @@ extern "C" {
     {
         try
         {
-            std::cout << "B1" << std::endl;
-            throw std::exception();
-            std::cout << "A1" << std::endl;
-        } catch (...)
-        {
-            std::cout << "Caught" << std::endl;
-        }
-
-        try
-        {
-            std::cout << "Before" << std::endl;
-            auto a = execute(input);
-            std::cout << "After" << std::endl;
-            return a;
+            return execute(input);
         }
         catch (std::exception& e)
         {
-            std::cout << "HIT" << std::endl;
             __report_error(e.what());
-            throw;
+            return nullptr;
         }
         catch (...)
         {
-            std::cout << "HIT2" << std::endl;
             __report_error("Unknown exception");
-            throw;
+            return nullptr;
         }
     }
 }

@@ -30,6 +30,11 @@ std::filesystem::path ProjectCompilationInput::outputFilePath()
     return config_.projectBinDir() / "project" SOURCE_EXTENSION ".so";
 }
 
+ProjectLibrary ProjectCompilationInput::loadDynamicLibrary()
+{
+    return CompilationInput::loadDynamicLibrary<ProjectLibrary>();
+}
+
 std::string ProjectCompilationInput::buildInputFile()
 {
     std::stringstream stream;

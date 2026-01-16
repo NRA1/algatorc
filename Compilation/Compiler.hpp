@@ -5,7 +5,7 @@
 #include <clang/Basic/DiagnosticOptions.h>
 
 #include "CompilationInput.hpp"
-#include "../DynamicLibrary.hpp"
+#include "../Loading/DynamicLibrary.hpp"
 
 #ifdef ALGATORC
 #define CLANG_BINARY_NAME "clang"
@@ -22,8 +22,6 @@ public:
     void compile(CompilationInput& input);
 
 private:
-    static std::vector<std::string> getDriverArgs();
-
     std::vector<std::string> default_args_;
     clang::DiagnosticOptions diagnostic_options_;
 };

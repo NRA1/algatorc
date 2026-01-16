@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef ALGATORCPP
+inline
+#endif
+// ReSharper disable once CppZeroConstantCanBeReplacedWithNullptr // C does not support nullptr
 char* __error_var = 0;
 
 #ifdef ALGATORCPP
@@ -26,6 +30,7 @@ void __clear_error()
     __error_var = 0;
 }
 
+// ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile // inline functions are not exported as symbols
 void __report_error(const char* error)
 {
     assert(__error_var == 0);

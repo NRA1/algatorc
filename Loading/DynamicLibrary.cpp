@@ -2,7 +2,7 @@
 
 #include <dlfcn.h>
 
-#include "Support/Error.hpp"
+#include "../Support/Error.hpp"
 
 DynamicLibrary::DynamicLibrary(const std::filesystem::path& path)
 {
@@ -13,5 +13,6 @@ DynamicLibrary::DynamicLibrary(const std::filesystem::path& path)
         << path << ": " << dlerror();
     }
 
-    dlerror();
+    error_func_ = resolve<char*(*)()>("__error");
+    clear_error_func_ = resolve<void(*)()>("__clear_error");
 }

@@ -45,7 +45,12 @@ extern "C" {
         catch (std::exception& e)
         {
             __report_error(e.what());
-            throw;
+            return nullptr;
+        }
+        catch (...)
+        {
+            __report_error("Unknown exception");
+            return nullptr;
         }
     }
 }
@@ -63,7 +68,12 @@ extern "C" {
         catch (std::exception& e)
         {
             __report_error(e.what());
-            throw;
+            return nullptr;
+        }
+        catch (...)
+        {
+            __report_error("Unknown exception");
+            return nullptr;
         }
     }
 }

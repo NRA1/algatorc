@@ -30,6 +30,11 @@ std::filesystem::path AlgorithmCompilationInput::outputFilePath()
     return config_.algorithmBinDir() / "algorithm" SOURCE_EXTENSION ".so";
 }
 
+AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()
+{
+    return CompilationInput::loadDynamicLibrary<AlgorithmLibrary>();
+}
+
 std::string AlgorithmCompilationInput::buildInputFile()
 {
     std::stringstream stream;

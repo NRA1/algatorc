@@ -2,10 +2,9 @@
 #define ALGATORC_COMPILATIONINPUT_HPP
 
 #include <filesystem>
-#include <llvm/ADT/IntrusiveRefCntPtr.h>
 #include <llvm/Support/VirtualFileSystem.h>
 
-#include "../DynamicLibrary.hpp"
+#include "../Loading/DynamicLibrary.hpp"
 
 
 class CompilationInput
@@ -15,10 +14,11 @@ public:
     virtual std::filesystem::path outputFilePath() = 0;
 
     std::filesystem::path objFilePath();
-    llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> inputFileSystem();
+
+    void writeInputFile();
 
     bool compilationNeeded();
-    DynamicLibrary loadDynamicLibrary();
+
 
     void clean();
 
@@ -28,13 +28,24 @@ protected:
     virtual std::string buildInputFile() = 0;
     virtual std::vector<std::filesystem::path> inputDependencies() = 0;
 
+    template<typename T>
+    T loadDynamicLibrary();
+
 private:
-    void buildVFSIfNotBuilt();
-
-    std::optional<llvm::IntrusiveRefCntPtr<llvm::vfs::InMemoryFileSystem>> memory_fs_;
-    std::optional<llvm::IntrusiveRefCntPtr<llvm::vfs::OverlayFileSystem>> overlay_;
-
     std::optional<std::string> input_file_;
 };
+
+template <typename T>
+T CompilationInput::loadDynamicLibrary()
+{
+    const std::filesystem::path path = outputFilePath();
+    if (!std::filesystem::exists(path))
+    {
+        error(ErrorType::System, ErrorPhase::Execution, "Tried to load dynamic library from path ")
+        << path << " but the path does not exist";
+    }
+
+    return T(path);
+}
 
 #endif //ALGATORC_COMPILATIONINPUT_HPP

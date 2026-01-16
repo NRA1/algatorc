@@ -3,16 +3,19 @@
 #include <dlfcn.h>
 #include <filesystem>
 
-#include "Support/Error.hpp"
+#include "../Support/Error.hpp"
 
 
 class DynamicLibrary
 {
-public:
+protected:
     explicit DynamicLibrary(const std::filesystem::path& path);
 
     template <typename T>
     T resolve(const std::string& name);
+
+    char* (*error_func_)();
+    void (*clear_error_func_)();
 
 private:
     void* handle_;

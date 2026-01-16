@@ -4,26 +4,28 @@
 
 void guardVoid(const std::string& source, char* (*err)(), void (*clear_err)(), const std::function<void()>& func)
 {
-    // llvm::CrashRecoveryContext crc;
-    // crc.Enable();
+    llvm::CrashRecoveryContext crc;
+    crc.Enable();
 
-    // if (!crc.RunSafelyOnNewStack([&]()
-    // {
+    const bool failed = !crc.RunSafelyOnNewStack([&]()
+    {
         func();
-    // }))
-    // {
-        // std::string msg;
-        // const char* err_msg = err();
-        // if (err_msg != nullptr)
-        // {
-            // msg = std::string(err_msg);
-            // clear_err();
-        // }
-        // else msg = "Unknown failure";
+    });
 
-        // error(ErrorType::User, ErrorPhase::Execution, "Failure occurred in ") << source << ": " << msg;
-    // }
-    // crc.Disable();
+    std::optional<std::string> msg;
+    const char* err_msg = err();
+    if (err_msg != nullptr)
+    {
+        msg = std::string(err_msg);
+        clear_err();
+    }
+    else if (failed)
+        msg = "Unknown failure";
+
+    if (msg.has_value())
+        error(ErrorType::User, ErrorPhase::Execution, "Failure occurred in ") << source << ": " << msg.value();
+
+    crc.Disable();
 }
 
 template <>
