@@ -22,6 +22,8 @@ public:
     void compile(CompilationInput& input);
 
 private:
+    static std::vector<std::string> getDriverArgs();
+
     std::vector<std::string> default_args_;
     clang::DiagnosticOptions diagnostic_options_;
 };

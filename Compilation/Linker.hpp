@@ -16,6 +16,7 @@ public:
 
 private:
     static std::vector<std::string> findLibraryPaths();
+    static std::vector<std::string> getDriverArgs();
 
     std::vector<std::string> default_args_;
 };

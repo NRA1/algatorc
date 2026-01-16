@@ -7,11 +7,33 @@ find_package(Clang 21.1.6 REQUIRED)
 find_package(LLVM 21.1.6 REQUIRED)
 find_package(LLD 21.1.6 REQUIRED)
 
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
+        COMMAND ruby ${CMAKE_CURRENT_SOURCE_DIR}/Scripts/read_template.rb ${CMAKE_CURRENT_SOURCE_DIR}/CompilationTemplates/Algorithm.hpp ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
+        DEPENDS CompilationTemplates/Algorithm.hpp
+        VERBATIM
+)
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
+        COMMAND ruby ${CMAKE_CURRENT_SOURCE_DIR}/Scripts/read_template.rb ${CMAKE_CURRENT_SOURCE_DIR}/CompilationTemplates/Project.hpp ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
+        DEPENDS CompilationTemplates/Project.hpp
+        VERBATIM
+)
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        COMMAND ruby ${CMAKE_CURRENT_SOURCE_DIR}/Scripts/read_template.rb ${CMAKE_CURRENT_SOURCE_DIR}/CompilationTemplates/ErrorReporting.hpp ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        DEPENDS CompilationTemplates/ErrorReporting.hpp
+        VERBATIM
+)
+
+#add_library(algorithmcpp SHARED IMPORTED)
+#set_target_properties(algorithmcpp PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/algorithmcpp.so)
+
 add_executable(algatorc main.cpp
-        Configuration.cpp
-        Configuration.hpp
-        Error.cpp
-        Error.hpp
+        Support/Configuration.cpp
+        Support/Configuration.hpp
+        Support/Error.cpp
+        Support/Error.hpp
         Compilation/Compiler.cpp
         Compilation/Compiler.hpp
         Compilation/Linker.cpp
@@ -27,17 +49,25 @@ add_executable(algatorc main.cpp
         Compilation/AlgorithmCompilationInput.cpp
         Compilation/AlgorithmCompilationInput.hpp
         DynamicLibrary.cpp
-        DynamicLibrary.hpp)
+        DynamicLibrary.hpp
+        Support/Guard.cpp
+        Support/Guard.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        Compilation/TestCi.cpp
+        Compilation/TestCi.hpp)
 target_compile_definitions(algatorc PUBLIC ALGATORC)
 target_link_libraries(algatorc PRIVATE clang clang-cpp)
 target_link_libraries(algatorc PRIVATE LLVM)
 target_link_libraries(algatorc PRIVATE lldCommon lldELF)
+target_include_directories(algatorc PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(algatorcpp main.cpp
-        Configuration.cpp
-        Configuration.hpp
-        Error.cpp
-        Error.hpp
+        Support/Configuration.cpp
+        Support/Configuration.hpp
+        Support/Error.cpp
+        Support/Error.hpp
         Compilation/Compiler.cpp
         Compilation/Compiler.hpp
         Compilation/Linker.cpp
@@ -53,8 +83,17 @@ add_executable(algatorcpp main.cpp
         Compilation/AlgorithmCompilationInput.cpp
         Compilation/AlgorithmCompilationInput.hpp
         DynamicLibrary.cpp
-        DynamicLibrary.hpp)
+        DynamicLibrary.hpp
+        Support/Guard.cpp
+        Support/Guard.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        Compilation/TestCi.cpp
+        Compilation/TestCi.hpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
 target_link_libraries(algatorcpp PRIVATE clang clang-cpp)
 target_link_libraries(algatorcpp PRIVATE LLVM)
 target_link_libraries(algatorcpp PRIVATE lldCommon lldELF)
+target_include_directories(algatorcpp PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+#target_link_libraries(algatorcpp PRIVATE algorithmcpp)

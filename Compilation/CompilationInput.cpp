@@ -1,6 +1,11 @@
 #include "CompilationInput.hpp"
 
-#include "../Error.hpp"
+#include "../Support/Error.hpp"
+
+std::filesystem::path CompilationInput::objFilePath()
+{
+    return inputFilePath().replace_extension(".o");
+}
 
 llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> CompilationInput::inputFileSystem()
 {
@@ -46,6 +51,7 @@ void CompilationInput::clean()
 
 void CompilationInput::buildVFSIfNotBuilt()
 {
+    if (overlay_ != std::nullopt) return;
     input_file_ = buildInputFile();
     const llvm::StringRef input_ref(input_file_.value());
     std::unique_ptr<llvm::MemoryBuffer> input_buffer = llvm::MemoryBuffer::getMemBuffer(input_ref);

@@ -3,7 +3,7 @@
 #include <dlfcn.h>
 #include <filesystem>
 
-#include "Error.hpp"
+#include "Support/Error.hpp"
 
 
 class DynamicLibrary

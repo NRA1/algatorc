@@ -12,9 +12,9 @@ class CompilationInput
 {
 public:
     virtual std::filesystem::path inputFilePath() = 0;
-    virtual std::filesystem::path objFilePath() = 0;
     virtual std::filesystem::path outputFilePath() = 0;
 
+    std::filesystem::path objFilePath();
     llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> inputFileSystem();
 
     bool compilationNeeded();

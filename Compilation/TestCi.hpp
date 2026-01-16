@@ -1,13 +1,14 @@
-#ifndef ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
-#define ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
+#ifndef ALGATORC_TESTCI_HPP
+#define ALGATORC_TESTCI_HPP
 #include "CompilationInput.hpp"
-#include "../Support/Configuration.hpp"
 
 
-class AlgorithmCompilationInput final : public CompilationInput
+class Configuration;
+
+class TestCI : public CompilationInput
 {
 public:
-    explicit AlgorithmCompilationInput(Configuration& config);
+    explicit TestCI(Configuration& config);
 
     std::filesystem::path inputFilePath() override;
     std::filesystem::path outputFilePath() override;
@@ -18,7 +19,8 @@ protected:
 
 private:
     Configuration& config_;
+
 };
 
 
-#endif //ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
+#endif //ALGATORC_TESTCI_HPP
