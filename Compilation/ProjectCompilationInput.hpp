@@ -8,19 +8,18 @@
 class ProjectCompilationInput final : public CompilationInput
 {
 public:
-    explicit ProjectCompilationInput(Configuration& config);
+    explicit ProjectCompilationInput();
 
     std::filesystem::path inputFilePath() override;
     std::filesystem::path outputFilePath() override;
 
     ProjectLibrary loadDynamicLibrary();
 
+    std::vector<std::string> wrappedSymbols() const override;
+
 protected:
     std::string buildInputFile() override;
     std::vector<std::filesystem::path> inputDependencies() override;
-
-private:
-    Configuration& config_;
 };
 
 

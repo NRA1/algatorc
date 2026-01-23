@@ -19,23 +19,25 @@
 class Configuration
 {
 public:
-    static Configuration parse(int argc, char* argv[]);
+    static void parse(int argc, char* argv[]);
+    static bool initialized();
 
-    [[nodiscard]] unsigned int timesToExecute() const;
-    [[nodiscard]] const std::filesystem::path& inputFilePath() const;
-    [[nodiscard]] const std::filesystem::path& outputFilePath() const;
-    [[nodiscard]] const std::filesystem::path& statusFilePath() const;
-    [[nodiscard]] const std::filesystem::path& inputSrcFilePath() const;
-    [[nodiscard]] const std::filesystem::path& outputSrcFilePath() const;
-    [[nodiscard]] const std::filesystem::path& dataConverterSrcFilePath() const;
-    [[nodiscard]] const std::filesystem::path& algorithmSrcFilePath() const;
-    [[nodiscard]] const std::filesystem::path& temporaryDir() const;
-    [[nodiscard]] const std::filesystem::path& algorithmBinDir() const;
-    [[nodiscard]] const std::filesystem::path& projectBinDir() const;
+    static unsigned int timesToExecute();
+    static const std::filesystem::path& inputFilePath();
+    static const std::filesystem::path& outputFilePath();
+    static const std::filesystem::path& statusFilePath();
+    static const std::filesystem::path& inputSrcFilePath();
+    static const std::filesystem::path& outputSrcFilePath();
+    static const std::filesystem::path& dataConverterSrcFilePath();
+    static const std::filesystem::path& algorithmSrcFilePath();
+    static const std::filesystem::path& temporaryDir();
+    static const std::filesystem::path& algorithmBinDir();
+    static const std::filesystem::path& projectBinDir();
 
 private:
     static void parseFlags(const char* flag, const char* path, std::optional<std::filesystem::path>& data_root_path,
                  std::optional<std::filesystem::path>& data_local_path);
+    static Configuration& get();
 
     Configuration(unsigned int times_to_execute, const std::filesystem::path& input_file_path,
         const std::filesystem::path& output_file_path, const std::filesystem::path& status_file_path,
@@ -43,6 +45,8 @@ private:
         const std::filesystem::path& data_converter_src_file_path, const std::filesystem::path& algorithm_src_file_path,
         const std::filesystem::path& temporary_dir, const std::filesystem::path& algorithm_bin_dir,
         const std::filesystem::path& project_bin_dir);
+
+    static std::optional<Configuration> configuration_;
 
     unsigned int times_to_execute_;
     std::filesystem::path input_file_path_;

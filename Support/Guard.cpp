@@ -33,3 +33,18 @@ void guard<void>(const std::string& source, char* (*error)(), void (*clear_error
 {
     guardVoid(source, error, clear_error, func);
 }
+
+void guardInternal(const std::function<void()>& func)
+{
+    llvm::CrashRecoveryContext crc;
+    crc.Enable();
+    if (!crc.RunSafelyOnNewStack([&]()
+    {
+        func();
+    }))
+    {
+        error(ErrorType::User, ErrorPhase::Execution, "Untrusted operation failed. This is likely due to user "
+                                                      "code changing process-owned data in a way which is not permitted");
+    }
+    crc.Disable();
+}

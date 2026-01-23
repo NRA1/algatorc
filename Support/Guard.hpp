@@ -21,4 +21,6 @@ T guard(const std::string& source, char* (*error)(), void (*clear_error)(), cons
 template<>
 void guard<void>(const std::string& source, char* (*error)(), void (*clear_error)(), const std::function<void()>& func);
 
+void guardInternal(const std::function<void()>& func);
+
 #endif //ALGATORC_GUARD_HPP

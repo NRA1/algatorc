@@ -65,6 +65,13 @@ void Compiler::compile(CompilationInput& input)
     for (std::string& arg : default_args_)
         args.push_back(arg.c_str());
 
+    std::vector<std::string> wrapping_args = input.wrappedSymbols();
+    for (int i = 0; i < wrapping_args.size(); i++)
+    {
+        wrapping_args[i] = "-Wl,--wrap=" + wrapping_args[i];
+        args.push_back(wrapping_args[i].c_str());
+    }
+
     const std::string output_flag = std::string("-o") + input.outputFilePath().c_str();
     args.push_back(output_flag.c_str());
 
@@ -72,7 +79,8 @@ void Compiler::compile(CompilationInput& input)
     args.push_back(input_file.c_str());
 
     // ReSharper disable once CppDFAMemoryLeak // Deleted by DiagnosticsEngine
-    CompilationDiagnosticsHandler* diagnostics_handler = new CompilationDiagnosticsHandler();
+    CompilationDiagnosticsHandler* diagnostics_handler = new CompilationDiagnosticsHandler(); // TODO: remove?
+    // clang::TextDiagnosticPrinter* diagnostics_handler = new clang::TextDiagnosticPrinter(llvm::errs(), diagnostic_options_);
     const llvm::IntrusiveRefCntPtr diagnostic_ids(new clang::DiagnosticIDs());
     const llvm::IntrusiveRefCntPtr diagnostic_engine(new clang::DiagnosticsEngine(diagnostic_ids, diagnostic_options_, diagnostics_handler));
 
@@ -83,11 +91,11 @@ void Compiler::compile(CompilationInput& input)
     {
         llvm::SmallVector<std::pair<int, const clang::driver::Command*>> failing_command;
         const int res = driver.ExecuteCompilation(*compilation, failing_command);
-        if (res < 0)
+        if (res != 0 || failing_command.size() > 0)
         {
             for (const clang::driver::Command*& command : failing_command | std::views::values)
                 driver.generateCompilationDiagnostics(*compilation, *command);
-            error(ErrorType::System, ErrorPhase::Compilation, "Compilation failed");
+            error(ErrorType::User, ErrorPhase::Compilation, "Compilation failed");
         }
     }
     else error(ErrorType::System, ErrorPhase::Compilation, "Failed to build compilation");

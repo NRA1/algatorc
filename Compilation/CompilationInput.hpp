@@ -19,8 +19,9 @@ public:
 
     bool compilationNeeded();
 
-
     void clean();
+
+    virtual std::vector<std::string> wrappedSymbols() const;
 
     virtual ~CompilationInput() = default;
 

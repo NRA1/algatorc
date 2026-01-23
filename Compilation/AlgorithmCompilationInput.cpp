@@ -3,16 +3,17 @@
 #include "../Support/Error.hpp"
 #include <Templates/Algorithm.hpp>
 #include <Templates/ErrorReporting.hpp>
+#include <Templates/MemoryManagement.hpp>
 
-AlgorithmCompilationInput::AlgorithmCompilationInput(Configuration& config) : config_(config)
+AlgorithmCompilationInput::AlgorithmCompilationInput()
 {
     try
     {
-        if (!std::filesystem::exists(config.temporaryDir()))
-            std::filesystem::create_directories(config.temporaryDir());
+        if (!std::filesystem::exists(Configuration::temporaryDir()))
+            std::filesystem::create_directories(Configuration::temporaryDir());
 
-        if (!std::filesystem::exists(config.algorithmBinDir()))
-            std::filesystem::create_directories(config.algorithmBinDir());
+        if (!std::filesystem::exists(Configuration::algorithmBinDir()))
+            std::filesystem::create_directories(Configuration::algorithmBinDir());
     }
     catch (std::filesystem::filesystem_error& e)
     {
@@ -22,12 +23,12 @@ AlgorithmCompilationInput::AlgorithmCompilationInput(Configuration& config) : co
 
 std::filesystem::path AlgorithmCompilationInput::inputFilePath()
 {
-    return config_.temporaryDir() / "algorithm" SOURCE_EXTENSION;
+    return Configuration::temporaryDir() / "algorithm" SOURCE_EXTENSION;
 }
 
 std::filesystem::path AlgorithmCompilationInput::outputFilePath()
 {
-    return config_.algorithmBinDir() / "algorithm" SOURCE_EXTENSION ".so";
+    return Configuration::algorithmBinDir() / "algorithm" SOURCE_EXTENSION ".so";
 }
 
 AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()
@@ -35,22 +36,28 @@ AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()
     return CompilationInput::loadDynamicLibrary<AlgorithmLibrary>();
 }
 
+std::vector<std::string> AlgorithmCompilationInput::wrappedSymbols() const
+{
+    return {"malloc", "free", "calloc", "realloc"};
+}
+
 std::string AlgorithmCompilationInput::buildInputFile()
 {
     std::stringstream stream;
     stream << ErrorReportingTemplate << "\n";
-    stream << "#include " << config_.inputSrcFilePath() << "\n";
-    stream << "#include " << config_.outputSrcFilePath() << "\n";
-    stream << "#include " << config_.algorithmSrcFilePath() << "\n";
+    stream << "#include " << Configuration::inputSrcFilePath() << "\n";
+    stream << "#include " << Configuration::outputSrcFilePath() << "\n";
+    stream << "#include " << Configuration::algorithmSrcFilePath() << "\n";
     stream << AlgorithmTemplate << "\n";
+    stream << MemoryManagementTemplate << "\n";
     return stream.str();
 }
 
 std::vector<std::filesystem::path> AlgorithmCompilationInput::inputDependencies()
 {
     std::vector<std::filesystem::path> dependencies;
-    dependencies.push_back(config_.inputSrcFilePath());
-    dependencies.push_back(config_.outputSrcFilePath());
-    dependencies.push_back(config_.algorithmSrcFilePath());
+    dependencies.push_back(Configuration::inputSrcFilePath());
+    dependencies.push_back(Configuration::outputSrcFilePath());
+    dependencies.push_back(Configuration::algorithmSrcFilePath());
     return dependencies;
 }

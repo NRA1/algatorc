@@ -6,7 +6,9 @@
 
 #include "Error.hpp"
 
-Configuration Configuration::parse(int argc, char* argv[])
+std::optional<Configuration> Configuration::configuration_ = std::nullopt;
+
+void Configuration::parse(int argc, char* argv[])
 {
     if (argc < 5 || argc == 6 || argc == 8 || argc > 9)
         error(ErrorType::System, ErrorPhase::Preparation) << "Invalid number of arguments";
@@ -89,7 +91,7 @@ Configuration Configuration::parse(int argc, char* argv[])
         data_local_path = cwd / data_local_path;
     }
 
-    std::filesystem::path input_file_path = io_filename_root.concat(".input");
+    std::filesystem::path input_file_path = io_filename_root.string() + ".input";
     if (!std::filesystem::exists(input_file_path))
         error(ErrorType::System, ErrorPhase::Preparation) << "Input file " << input_file_path << " does not exist.";
 
@@ -113,8 +115,8 @@ Configuration Configuration::parse(int argc, char* argv[])
     if (!std::filesystem::exists(algorithm_src_file_path))
         error(ErrorType::System, ErrorPhase::Preparation) << "Algorithm source file " << algorithm_src_file_path << " does not exist.";
 
-    std::filesystem::path output_file_path = io_filename_root.concat(".output");
-    std::filesystem::path status_file_path = io_filename_root.concat(".status");
+    std::filesystem::path output_file_path = io_filename_root.string() + ".output";
+    std::filesystem::path status_file_path = io_filename_root.string() + ".status";
 
     std::filesystem::path temporary_dir = data_local_path / "tmp" / project_name;
 
@@ -122,13 +124,18 @@ Configuration Configuration::parse(int argc, char* argv[])
     std::filesystem::path algorithm_bin_dir = (data_local_project_dir / "algs" / "ALG-").concat(algorithm_name) / "bin";
     std::filesystem::path project_bin_dir = data_local_project_dir / "proj" / "bin";
 
-    return {times_to_execute, input_file_path, output_file_path, status_file_path, input_src_file_path,
+    configuration_ = {times_to_execute, input_file_path, output_file_path, status_file_path, input_src_file_path,
         output_src_file_path, data_converter_src_file_path, algorithm_src_file_path, temporary_dir,
         algorithm_bin_dir, project_bin_dir};
 }
 
+bool Configuration::initialized()
+{
+    return configuration_.has_value();
+}
+
 void Configuration::parseFlags(const char* flag, const char* path,
-    std::optional<std::filesystem::path>& data_root_path, std::optional<std::filesystem::path>& data_local_path)
+                               std::optional<std::filesystem::path>& data_root_path, std::optional<std::filesystem::path>& data_local_path)
 {
     if (strcmp(flag, "-dr") == 0)
     {
@@ -144,12 +151,18 @@ void Configuration::parseFlags(const char* flag, const char* path,
     }
 }
 
+Configuration& Configuration::get()
+{
+    assert(configuration_.has_value() && "Configuration must be set before first query");
+    return configuration_.value();
+}
+
 Configuration::Configuration(const unsigned int times_to_execute, const std::filesystem::path& input_file_path,
-    const std::filesystem::path& output_file_path, const std::filesystem::path& status_file_path,
-    const std::filesystem::path& input_src_file_path, const std::filesystem::path& output_src_file_path,
-    const std::filesystem::path& data_converter_src_file_path, const std::filesystem::path& algorithm_src_file_path,
-    const std::filesystem::path& temporary_dir, const std::filesystem::path& algorithm_bin_dir,
-    const std::filesystem::path& project_bin_dir)
+                             const std::filesystem::path& output_file_path, const std::filesystem::path& status_file_path,
+                             const std::filesystem::path& input_src_file_path, const std::filesystem::path& output_src_file_path,
+                             const std::filesystem::path& data_converter_src_file_path, const std::filesystem::path& algorithm_src_file_path,
+                             const std::filesystem::path& temporary_dir, const std::filesystem::path& algorithm_bin_dir,
+                             const std::filesystem::path& project_bin_dir)
 {
     times_to_execute_ = times_to_execute;
     input_file_path_ = input_file_path;
@@ -164,57 +177,57 @@ Configuration::Configuration(const unsigned int times_to_execute, const std::fil
     project_bin_dir_ = project_bin_dir;
 }
 
-unsigned int Configuration::timesToExecute() const
+unsigned int Configuration::timesToExecute()
 {
-    return times_to_execute_;
+    return get().times_to_execute_;
 }
 
-const std::filesystem::path& Configuration::inputFilePath() const
+const std::filesystem::path& Configuration::inputFilePath()
 {
-    return input_file_path_;
+    return get().input_file_path_;
 }
 
-const std::filesystem::path& Configuration::outputFilePath() const
+const std::filesystem::path& Configuration::outputFilePath()
 {
-    return output_file_path_;
+    return get().output_file_path_;
 }
 
-const std::filesystem::path& Configuration::statusFilePath() const
+const std::filesystem::path& Configuration::statusFilePath()
 {
-    return status_file_path_;
+    return get().status_file_path_;
 }
 
-const std::filesystem::path& Configuration::inputSrcFilePath() const
+const std::filesystem::path& Configuration::inputSrcFilePath()
 {
-    return input_src_file_path_;
+    return get().input_src_file_path_;
 }
 
-const std::filesystem::path& Configuration::outputSrcFilePath() const
+const std::filesystem::path& Configuration::outputSrcFilePath()
 {
-    return output_src_file_path_;
+    return get().output_src_file_path_;
 }
 
-const std::filesystem::path& Configuration::dataConverterSrcFilePath() const
+const std::filesystem::path& Configuration::dataConverterSrcFilePath()
 {
-    return data_converter_src_file_path_;
+    return get().data_converter_src_file_path_;
 }
 
-const std::filesystem::path& Configuration::algorithmSrcFilePath() const
+const std::filesystem::path& Configuration::algorithmSrcFilePath()
 {
-    return algorithm_src_file_path_;
+    return get().algorithm_src_file_path_;
 }
 
-const std::filesystem::path& Configuration::temporaryDir() const
+const std::filesystem::path& Configuration::temporaryDir()
 {
-    return temporary_dir_;
+    return get().temporary_dir_;
 }
 
-const std::filesystem::path& Configuration::algorithmBinDir() const
+const std::filesystem::path& Configuration::algorithmBinDir()
 {
-    return algorithm_bin_dir_;
+    return get().algorithm_bin_dir_;
 }
 
-const std::filesystem::path& Configuration::projectBinDir() const
+const std::filesystem::path& Configuration::projectBinDir()
 {
-    return project_bin_dir_;
+    return get().project_bin_dir_;
 }

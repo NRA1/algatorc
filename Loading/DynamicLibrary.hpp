@@ -8,6 +8,9 @@
 
 class DynamicLibrary
 {
+public:
+    void freeAll() const;
+
 protected:
     explicit DynamicLibrary(const std::filesystem::path& path);
 
@@ -19,6 +22,8 @@ protected:
 
 private:
     void* handle_;
+
+    void (*free_all_func_)();
 };
 
 template <typename T>

@@ -15,4 +15,10 @@ DynamicLibrary::DynamicLibrary(const std::filesystem::path& path)
 
     error_func_ = resolve<char*(*)()>("__error");
     clear_error_func_ = resolve<void(*)()>("__clear_error");
+    free_all_func_ = resolve<void(*)()>("__free_all");
+}
+
+void DynamicLibrary::freeAll() const
+{
+    free_all_func_();
 }

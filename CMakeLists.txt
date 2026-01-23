@@ -24,6 +24,12 @@ add_custom_command(
         DEPENDS CompilationTemplates/ErrorReporting.hpp
         VERBATIM
 )
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Templates/MemoryManagement.hpp
+        COMMAND ruby ${CMAKE_CURRENT_SOURCE_DIR}/Scripts/read_template.rb ${CMAKE_CURRENT_SOURCE_DIR}/CompilationTemplates/MemoryManagement.hpp ${CMAKE_CURRENT_BINARY_DIR}/Templates/MemoryManagement.hpp
+        DEPENDS CompilationTemplates/MemoryManagement.hpp
+        VERBATIM
+)
 
 add_executable(algatorc main.cpp
         Support/Configuration.cpp
@@ -49,6 +55,7 @@ add_executable(algatorc main.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/MemoryManagement.hpp
         Loading/ProjectLibrary.cpp
         Loading/ProjectLibrary.hpp
         Loading/AlgorithmLibrary.cpp
@@ -82,6 +89,7 @@ add_executable(algatorcpp main.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/MemoryManagement.hpp
         Loading/ProjectLibrary.cpp
         Loading/ProjectLibrary.hpp
         Loading/AlgorithmLibrary.cpp

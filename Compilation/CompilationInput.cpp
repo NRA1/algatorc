@@ -43,3 +43,8 @@ void CompilationInput::clean()
     if (std::filesystem::exists(objFilePath()))
         std::filesystem::remove(objFilePath());
 }
+
+std::vector<std::string> CompilationInput::wrappedSymbols() const
+{
+    return {};
+}
