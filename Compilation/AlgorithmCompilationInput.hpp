@@ -1,7 +1,7 @@
 #ifndef ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
 #define ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
 #include "CompilationInput.hpp"
-#include "../Loading/AlgorithmLibrary.hpp"
+#include "../Execution/AlgorithmLibrary.hpp"
 #include "../Support/Configuration.hpp"
 
 

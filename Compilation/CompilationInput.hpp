@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <llvm/Support/VirtualFileSystem.h>
 
-#include "../Loading/DynamicLibrary.hpp"
+#include "../Execution/DynamicLibrary.hpp"
 
 
 class CompilationInput

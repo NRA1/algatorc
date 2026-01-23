@@ -6,12 +6,9 @@
 #include "Support/Configuration.hpp"
 #include "Compilation/Compiler.hpp"
 #include "Compilation/ProjectCompilationInput.hpp"
-
+#include "Execution/Execution.hpp"
+#include "Support/FileManagement.hpp"
 #include "Support/Guard.hpp"
-
-class input;
-class output;
-extern "C" output* __execute(input* input);
 
 int main(const int argc, char* argv[])
 {
@@ -46,39 +43,15 @@ int main(const int argc, char* argv[])
     }
     AlgorithmLibrary algorithm = algorithm_input.loadDynamicLibrary();
 
-
-    std::ifstream input_file;
-    input_file.open(Configuration::inputFilePath(), std::ios::in | std::ios::binary | std::ios::ate);
-    if (!input_file.is_open())
-        error(ErrorType::System, ErrorPhase::Setup, "Failed to open input file: ") << Configuration::inputFilePath();
-    std::streampos file_size = input_file.tellg();
-    char* buffer = new char[file_size];
-    input_file.seekg(0, std::ios::beg);
-    input_file.read(buffer, file_size);
-    input_file.close();
-    if (input_file.fail())
-        error(ErrorType::System, ErrorPhase::Setup, "Failed to read input file: ") << Configuration::inputFilePath();
-
+    auto [buffer, file_size] = readInputFile();
     void* input = project.deserializeInput(buffer, file_size);
 
-    void* output;
-    for (int i = 0; i < 1000; i++)
-        output = algorithm.execute(input);
+    auto [output, times] = execute(algorithm, input);
 
-    unsigned int n;
-    char* serialized_output = project.serializeOutput(output, &n);
+    unsigned int output_len;
+    char* serialized_output = project.serializeOutput(output, &output_len);
 
-    std::ofstream output_file;
-    output_file.open(Configuration::outputFilePath(), std::ios::out | std::ios::binary | std::ios::trunc);
-    if (!output_file.is_open())
-        error(ErrorType::System, ErrorPhase::Teardown, "Failed to open output file: ") << Configuration::outputFilePath();
-    guardInternal([&]
-    {
-        output_file.write(serialized_output, n);
-    });
-    output_file.close();
-    if (output_file.fail())
-        error(ErrorType::System, ErrorPhase::Teardown, "Failed to write output file: ") << Configuration::outputFilePath();
+    writeOutputFile(serialized_output, output_len);
 
     algorithm.freeAll();
     project.freeAll();
@@ -88,14 +61,7 @@ int main(const int argc, char* argv[])
         delete[] buffer;
     });
 
-    std::ofstream status_file;
-    status_file.open(Configuration::statusFilePath(), std::ios::out | std::ios::trunc);
-    if (!status_file.is_open())
-        error(ErrorType::System, ErrorPhase::Teardown, "Failed to open status file: ") << Configuration::statusFilePath();
-    status_file << "OK" << std::endl;
-    status_file.close();
-    if (status_file.fail())
-        error(ErrorType::System, ErrorPhase::Teardown, "Failed to write status file: ") << Configuration::statusFilePath();
+    writeSuccessStatusFile(times);
 
     return 0;
 }

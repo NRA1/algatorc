@@ -80,6 +80,7 @@ void __free_all()
         __real_free(ptr);
         ptr = prev_ptr;
     }
+    __last_alloc = NULL;
 }
 #ifdef ALGATORCPP
 }

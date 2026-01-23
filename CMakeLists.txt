@@ -48,18 +48,22 @@ add_executable(algatorc main.cpp
         Compilation/ProjectCompilationInput.hpp
         Compilation/AlgorithmCompilationInput.cpp
         Compilation/AlgorithmCompilationInput.hpp
-        Loading/DynamicLibrary.cpp
-        Loading/DynamicLibrary.hpp
+        Execution/DynamicLibrary.cpp
+        Execution/DynamicLibrary.hpp
         Support/Guard.cpp
         Support/Guard.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/MemoryManagement.hpp
-        Loading/ProjectLibrary.cpp
-        Loading/ProjectLibrary.hpp
-        Loading/AlgorithmLibrary.cpp
-        Loading/AlgorithmLibrary.hpp)
+        Execution/ProjectLibrary.cpp
+        Execution/ProjectLibrary.hpp
+        Execution/AlgorithmLibrary.cpp
+        Execution/AlgorithmLibrary.hpp
+        Support/FileManagement.hpp
+        Support/FileManagement.cpp
+        Execution/Execution.hpp
+        Execution/Execution.cpp)
 target_compile_definitions(algatorc PUBLIC ALGATORC)
 target_link_libraries(algatorc PRIVATE clang clang-cpp)
 target_link_libraries(algatorc PRIVATE LLVM)
@@ -82,18 +86,22 @@ add_executable(algatorcpp main.cpp
         Compilation/ProjectCompilationInput.hpp
         Compilation/AlgorithmCompilationInput.cpp
         Compilation/AlgorithmCompilationInput.hpp
-        Loading/DynamicLibrary.cpp
-        Loading/DynamicLibrary.hpp
+        Execution/DynamicLibrary.cpp
+        Execution/DynamicLibrary.hpp
         Support/Guard.cpp
         Support/Guard.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/MemoryManagement.hpp
-        Loading/ProjectLibrary.cpp
-        Loading/ProjectLibrary.hpp
-        Loading/AlgorithmLibrary.cpp
-        Loading/AlgorithmLibrary.hpp)
+        Execution/ProjectLibrary.cpp
+        Execution/ProjectLibrary.hpp
+        Execution/AlgorithmLibrary.cpp
+        Execution/AlgorithmLibrary.hpp
+        Support/FileManagement.hpp
+        Support/FileManagement.cpp
+        Execution/Execution.hpp
+        Execution/Execution.cpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
 target_link_libraries(algatorcpp PRIVATE clang clang-cpp)
 target_link_libraries(algatorcpp PRIVATE LLVM)

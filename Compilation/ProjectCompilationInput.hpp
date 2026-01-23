@@ -1,7 +1,7 @@
 #ifndef ALGATORC_PROJECTCOMPILATIONINPUT_HPP
 #define ALGATORC_PROJECTCOMPILATIONINPUT_HPP
 #include "CompilationInput.hpp"
-#include "../Loading/ProjectLibrary.hpp"
+#include "../Execution/ProjectLibrary.hpp"
 #include "../Support/Configuration.hpp"
 
 
