@@ -4,7 +4,14 @@
 
 #include "Configuration.hpp"
 
-Error::Error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase) : outfile_(std::ofstream{})
+ErrorPhase::ErrorPhase Error::phase_ = ErrorPhase::Preparation;
+
+void Error::setPhase(const ErrorPhase::ErrorPhase phase)
+{
+    phase_ = phase;
+}
+
+Error::Error(ErrorType::ErrorType type) : outfile_(std::ofstream{})
 {
     if (!Configuration::initialized())
     {
@@ -32,7 +39,7 @@ Error::Error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase) : outfile_
         break;
     }
     outfile_.value() << "\n" << "phase: ";
-    switch (phase)
+    switch (phase_)
     {
     case ErrorPhase::Preparation:
         outfile_.value() << "PREPARATION";
@@ -53,7 +60,7 @@ Error::Error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase) : outfile_
     outfile_.value() << "\n";
 }
 
-Error::Error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase, const std::string& message) : Error(type, phase)
+Error::Error(ErrorType::ErrorType type, const std::string& message) : Error(type)
 {
     std::cerr << message;
     if (outfile_.has_value())
@@ -88,12 +95,12 @@ Error::~Error()
     exit(1);
 }
 
-Error error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase)
+Error error(const ErrorType::ErrorType type)
 {
-    return {type, phase};
+    return Error{type};
 }
 
-Error error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase, const std::string& message)
+Error error(const ErrorType::ErrorType type, const std::string& message)
 {
-    return {type, phase, message};
+    return Error{type, message};
 }

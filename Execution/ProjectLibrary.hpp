@@ -8,8 +8,8 @@ class ProjectLibrary : public DynamicLibrary
 public:
     explicit ProjectLibrary(const std::filesystem::path& path);
 
-    void* deserializeInput(char* bytes, unsigned int n) const;
-    char* serializeOutput(void* output, unsigned int* n) const;
+    void* deserializeInput(char* bytes, unsigned int n);
+    char* serializeOutput(void* output, unsigned int* n);
 
 private:
     void* (*deserialize_input_func_)(char*, unsigned int);

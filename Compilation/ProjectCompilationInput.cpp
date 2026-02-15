@@ -3,7 +3,6 @@
 #include "../Support/Error.hpp"
 #include <Templates/Project.hpp>
 #include <Templates/ErrorReporting.hpp>
-#include <Templates/MemoryManagement.hpp>
 
 ProjectCompilationInput::ProjectCompilationInput()
 {
@@ -17,7 +16,7 @@ ProjectCompilationInput::ProjectCompilationInput()
     }
     catch (std::filesystem::filesystem_error& e)
     {
-        error(ErrorType::System, ErrorPhase::Preparation, "Failed to create binary directories: ") << e.what();
+        error(ErrorType::System, "Failed to create binary directories: ") << e.what();
     }
 }
 
@@ -36,10 +35,6 @@ ProjectLibrary ProjectCompilationInput::loadDynamicLibrary()
     return CompilationInput::loadDynamicLibrary<ProjectLibrary>();
 }
 
-std::vector<std::string> ProjectCompilationInput::wrappedSymbols() const
-{
-    return {"malloc", "free", "calloc", "realloc"};
-}
 
 std::string ProjectCompilationInput::buildInputFile()
 {
@@ -49,7 +44,6 @@ std::string ProjectCompilationInput::buildInputFile()
     stream << "#include " << Configuration::outputSrcFilePath() << "\n";
     stream << "#include " << Configuration::dataConverterSrcFilePath() << "\n";
     stream << ProjectTemplate << "\n";
-    stream << MemoryManagementTemplate << "\n";
     return stream.str();
 }
 

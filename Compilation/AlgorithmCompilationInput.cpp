@@ -3,7 +3,6 @@
 #include "../Support/Error.hpp"
 #include <Templates/Algorithm.hpp>
 #include <Templates/ErrorReporting.hpp>
-#include <Templates/MemoryManagement.hpp>
 
 AlgorithmCompilationInput::AlgorithmCompilationInput()
 {
@@ -17,7 +16,7 @@ AlgorithmCompilationInput::AlgorithmCompilationInput()
     }
     catch (std::filesystem::filesystem_error& e)
     {
-        error(ErrorType::System, ErrorPhase::Preparation, "Failed to create binary directories: ") << e.what();
+        error(ErrorType::System, "Failed to create binary directories: ") << e.what();
     }
 }
 
@@ -36,20 +35,15 @@ AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()
     return CompilationInput::loadDynamicLibrary<AlgorithmLibrary>();
 }
 
-std::vector<std::string> AlgorithmCompilationInput::wrappedSymbols() const
-{
-    return {"malloc", "free", "calloc", "realloc"};
-}
 
 std::string AlgorithmCompilationInput::buildInputFile()
 {
     std::stringstream stream;
-    stream << ErrorReportingTemplate << "\n";
     stream << "#include " << Configuration::inputSrcFilePath() << "\n";
     stream << "#include " << Configuration::outputSrcFilePath() << "\n";
     stream << "#include " << Configuration::algorithmSrcFilePath() << "\n";
+    stream << ErrorReportingTemplate << "\n";
     stream << AlgorithmTemplate << "\n";
-    stream << MemoryManagementTemplate << "\n";
     return stream.str();
 }
 
@@ -60,4 +54,9 @@ std::vector<std::filesystem::path> AlgorithmCompilationInput::inputDependencies(
     dependencies.push_back(Configuration::outputSrcFilePath());
     dependencies.push_back(Configuration::algorithmSrcFilePath());
     return dependencies;
+}
+
+long long getHits()
+{
+    return -1;
 }

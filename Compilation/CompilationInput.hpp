@@ -21,8 +21,6 @@ public:
 
     void clean();
 
-    virtual std::vector<std::string> wrappedSymbols() const;
-
     virtual ~CompilationInput() = default;
 
 protected:
@@ -42,8 +40,7 @@ T CompilationInput::loadDynamicLibrary()
     const std::filesystem::path path = outputFilePath();
     if (!std::filesystem::exists(path))
     {
-        error(ErrorType::System, ErrorPhase::Execution, "Tried to load dynamic library from path ")
-        << path << " but the path does not exist";
+        error(ErrorType::System, "Tried to load dynamic library from path ") << path << " but the path does not exist";
     }
 
     return T(path);

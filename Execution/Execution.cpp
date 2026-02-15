@@ -2,9 +2,9 @@
 #include "../Support/FileManagement.hpp"
 #include "../Support/Configuration.hpp"
 
-std::pair<void*, std::vector<long int>> execute(const AlgorithmLibrary& algorithm, void* input)
+std::pair<void*, std::vector<long int>> execute(AlgorithmLibrary& algorithm, void* input)
 {
-    const int times_to_execute = Configuration::timesToExecute();
+    const unsigned int times_to_execute = Configuration::timesToExecute();
 
     std::vector<long int> times;
     times.reserve(times_to_execute);

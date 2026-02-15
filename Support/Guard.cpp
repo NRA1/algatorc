@@ -23,7 +23,7 @@ void guardVoid(const std::string& source, char* (*err)(), void (*clear_err)(), c
         msg = "Unknown failure";
 
     if (msg.has_value())
-        error(ErrorType::User, ErrorPhase::Execution, "Failure occurred in ") << source << ": " << msg.value();
+        error(ErrorType::User, "Failure occurred in ") << source << ": " << msg.value();
 
     crc.Disable();
 }
@@ -43,8 +43,8 @@ void guardInternal(const std::function<void()>& func)
         func();
     }))
     {
-        error(ErrorType::User, ErrorPhase::Execution, "Untrusted operation failed. This is likely due to user "
-                                                      "code changing process-owned data in a way which is not permitted");
+        error(ErrorType::User, "Untrusted operation failed. This is likely due to user code changing"
+                               " process-owned data in a way which is not permitted");
     }
     crc.Disable();
 }

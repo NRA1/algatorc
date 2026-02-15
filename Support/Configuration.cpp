@@ -11,7 +11,7 @@ std::optional<Configuration> Configuration::configuration_ = std::nullopt;
 void Configuration::parse(int argc, char* argv[])
 {
     if (argc < 5 || argc == 6 || argc == 8 || argc > 9)
-        error(ErrorType::System, ErrorPhase::Preparation) << "Invalid number of arguments";
+        error(ErrorType::System, "Invalid number of arguments");
 
     std::optional<std::filesystem::path> data_root_path_opt = std::nullopt;
     std::optional<std::filesystem::path> data_local_path_opt = std::nullopt;
@@ -36,11 +36,11 @@ void Configuration::parse(int argc, char* argv[])
     }
     catch (std::invalid_argument&)
     {
-        error(ErrorType::System, ErrorPhase::Preparation) << "Invalid <times_to_execute> value: '" << argv[4] << "'. Expected an integer.";
+        error(ErrorType::System) << "Invalid <times_to_execute> value: '" << argv[4] << "'. Expected an integer.";
     }
     catch (std::out_of_range&)
     {
-        error(ErrorType::System, ErrorPhase::Preparation) << "<times_to_execute> too large";
+        error(ErrorType::System, "<times_to_execute> too large");
     }
 
 
@@ -51,9 +51,9 @@ void Configuration::parse(int argc, char* argv[])
         const char* path = std::getenv("ALGATOR_ROOT");
         if (path == nullptr || path[0] == '\0')
         {
-            error(ErrorType::System, ErrorPhase::Preparation,
-                "Either ALGATOR_ROOT environment variable must be set or flags '-dr <algator_data_root_path>'"
-                " and '-dl <algator_data_local_path>' must be provided.");
+            error(ErrorType::System, "Either ALGATOR_ROOT environment variable must be set or flags"
+                                     " '-dr <algator_data_root_path>' and '-dl <algator_data_local_path>' must"
+                                     " be provided.");
         }
 
         std::filesystem::path algator_root_path;
@@ -63,7 +63,7 @@ void Configuration::parse(int argc, char* argv[])
         }
         catch (std::exception&)
         {
-            error(ErrorType::System, ErrorPhase::Preparation) << "Invalid ALGATOR_ROOT path: '" << path << "'";
+            error(ErrorType::System) << "Invalid ALGATOR_ROOT path: '" << path << "'";
         }
 
         if (!data_root_path_opt.has_value())
@@ -93,27 +93,27 @@ void Configuration::parse(int argc, char* argv[])
 
     std::filesystem::path input_file_path = io_filename_root.string() + ".input";
     if (!std::filesystem::exists(input_file_path))
-        error(ErrorType::System, ErrorPhase::Preparation) << "Input file " << input_file_path << " does not exist.";
+        error(ErrorType::System) << "Input file " << input_file_path << " does not exist.";
 
     std::filesystem::path project_dir = (data_root_path / "projects" / "PROJ-").concat(project_name);
     if (!std::filesystem::exists(project_dir))
-        error(ErrorType::System, ErrorPhase::Preparation) << "Project directory " << project_dir << " does not exist.";
+        error(ErrorType::System) << "Project directory " << project_dir << " does not exist.";
 
     std::filesystem::path input_src_file_path = project_dir / "proj" / PROJECT_SOURCE_DIR_NAME / "input" SOURCE_EXTENSION;
     if (!std::filesystem::exists(input_src_file_path))
-        error(ErrorType::System, ErrorPhase::Preparation) << "Input source file " << input_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Input source file " << input_src_file_path << " does not exist.";
 
     std::filesystem::path output_src_file_path = project_dir / "proj" / PROJECT_SOURCE_DIR_NAME / "output" SOURCE_EXTENSION;
     if (!std::filesystem::exists(output_src_file_path))
-        error(ErrorType::System, ErrorPhase::Preparation) << "Output source file " << output_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Output source file " << output_src_file_path << " does not exist.";
 
     std::filesystem::path data_converter_src_file_path = project_dir / "proj" / PROJECT_SOURCE_DIR_NAME / "data_converter" SOURCE_EXTENSION;
     if (!std::filesystem::exists(data_converter_src_file_path))
-        error(ErrorType::System, ErrorPhase::Preparation) << "Data converter source file " << data_converter_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Data converter source file " << data_converter_src_file_path << " does not exist.";
 
     std::filesystem::path algorithm_src_file_path = project_dir / "algs" / (std::string("ALG-") + algorithm_name) / "src" / "algorithm" SOURCE_EXTENSION;
     if (!std::filesystem::exists(algorithm_src_file_path))
-        error(ErrorType::System, ErrorPhase::Preparation) << "Algorithm source file " << algorithm_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Algorithm source file " << algorithm_src_file_path << " does not exist.";
 
     std::filesystem::path output_file_path = io_filename_root.string() + ".output";
     std::filesystem::path status_file_path = io_filename_root.string() + ".status";
@@ -147,7 +147,7 @@ void Configuration::parseFlags(const char* flag, const char* path,
     }
     else
     {
-        error(ErrorType::System, ErrorPhase::Preparation) << "Invalid argument: " << flag;
+        error(ErrorType::System) << "Invalid argument: " << flag;
     }
 }
 

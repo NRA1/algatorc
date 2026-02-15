@@ -7,18 +7,16 @@
 #include <clang/Driver/Compilation.h>
 #include <clang/Driver/Driver.h>
 #include <clang/Frontend/CompilerInstance.h>
-#include <clang/Frontend/Utils.h>
 #include <llvm/Support/ErrorOr.h>
 #include <llvm/Support/Program.h>
 #include <llvm/Support/TargetSelect.h>
-#include <clang/Frontend/CompilerInvocation.h>
 #include <llvm/TargetParser/Host.h>
-#include <clang/Frontend/TextDiagnosticPrinter.h>
-#include <clang/Lex/PreprocessorOptions.h>
 
-#include "CompilationDiagnosticsHandler.hpp"
 #include "DummyConsumer.hpp"
+#include "../Support/Configuration.hpp"
 #include "../Support/Error.hpp"
+#include "../Support/FileManagement.hpp"
+#include <clang/Frontend/TextDiagnosticPrinter.h>
 
 Compiler::Compiler()
 {
@@ -28,7 +26,7 @@ Compiler::Compiler()
 
     const llvm::ErrorOr<std::string> clang_path = llvm::sys::findProgramByName(CLANG_BINARY_NAME);
     if (const std::error_code ec = clang_path.getError())
-        error(ErrorType::System, ErrorPhase::Compilation) << "Failed to find clang executable: " << ec.message();
+        error(ErrorType::System) << "Failed to find clang executable: " << ec.message();
 
     std::vector<std::string> default_args;
     default_args.push_back(clang_path.get());
@@ -59,19 +57,12 @@ void Compiler::compile(CompilationInput& input)
 
     const llvm::ErrorOr<std::string> clang_path = llvm::sys::findProgramByName(CLANG_BINARY_NAME);
     if (const std::error_code ec = clang_path.getError())
-        error(ErrorType::System, ErrorPhase::Compilation) << "Failed to find clang executable: " << ec.message();
+        error(ErrorType::System) << "Failed to find clang executable: " << ec.message();
 
     std::vector<const char *> args;
     for (std::string& arg : default_args_)
         args.push_back(arg.c_str());
-
-    std::vector<std::string> wrapping_args = input.wrappedSymbols();
-    for (int i = 0; i < wrapping_args.size(); i++)
-    {
-        wrapping_args[i] = "-Wl,--wrap=" + wrapping_args[i];
-        args.push_back(wrapping_args[i].c_str());
-    }
-
+    
     const std::string output_flag = std::string("-o") + input.outputFilePath().c_str();
     args.push_back(output_flag.c_str());
 
@@ -79,8 +70,8 @@ void Compiler::compile(CompilationInput& input)
     args.push_back(input_file.c_str());
 
     // ReSharper disable once CppDFAMemoryLeak // Deleted by DiagnosticsEngine
-    CompilationDiagnosticsHandler* diagnostics_handler = new CompilationDiagnosticsHandler(); // TODO: remove?
-    // clang::TextDiagnosticPrinter* diagnostics_handler = new clang::TextDiagnosticPrinter(llvm::errs(), diagnostic_options_);
+    // DummyConsumer* diagnostics_handler = new DummyConsumer();
+    clang::TextDiagnosticPrinter* diagnostics_handler = new clang::TextDiagnosticPrinter(llvm::errs(), diagnostic_options_);
     const llvm::IntrusiveRefCntPtr diagnostic_ids(new clang::DiagnosticIDs());
     const llvm::IntrusiveRefCntPtr diagnostic_engine(new clang::DiagnosticsEngine(diagnostic_ids, diagnostic_options_, diagnostics_handler));
 
@@ -89,14 +80,22 @@ void Compiler::compile(CompilationInput& input)
     clang::driver::Compilation* compilation = driver.BuildCompilation(args);
     if (compilation)
     {
+        const std::filesystem::path outfile_path = Configuration::temporaryDir() / "compilation.out";
+        std::filesystem::remove(outfile_path);
+        const std::string outfile = outfile_path.string();
+        compilation->Redirect({std::nullopt, outfile, outfile});
+
         llvm::SmallVector<std::pair<int, const clang::driver::Command*>> failing_command;
         const int res = driver.ExecuteCompilation(*compilation, failing_command);
         if (res != 0 || failing_command.size() > 0)
         {
-            for (const clang::driver::Command*& command : failing_command | std::views::values)
-                driver.generateCompilationDiagnostics(*compilation, *command);
-            error(ErrorType::User, ErrorPhase::Compilation, "Compilation failed");
+            if (!std::filesystem::exists(outfile_path))
+                error(ErrorType::System, "Compilation failed but compilation output file was not created");
+            const std::string compilation_output = readTextFile(outfile_path);
+
+            error(ErrorType::User, "Compilation failed:\n") << compilation_output;
         }
+        delete compilation;
     }
-    else error(ErrorType::System, ErrorPhase::Compilation, "Failed to build compilation");
+    else error(ErrorType::System, "Failed to build compilation");
 }

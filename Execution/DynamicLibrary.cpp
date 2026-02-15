@@ -9,16 +9,20 @@ DynamicLibrary::DynamicLibrary(const std::filesystem::path& path)
     handle_ = dlopen(path.c_str(), RTLD_NOW);
     if (!handle_)
     {
-        error(ErrorType::System, ErrorPhase::Execution, "Failed to load dynamic library from path ")
-        << path << ": " << dlerror();
+        error(ErrorType::System, "Failed to load dynamic library from path ") << path << ": " << dlerror();
     }
 
     error_func_ = resolve<char*(*)()>("__error");
     clear_error_func_ = resolve<void(*)()>("__clear_error");
-    free_all_func_ = resolve<void(*)()>("__free_all");
 }
 
-void DynamicLibrary::freeAll() const
+
+void DynamicLibrary::freeAll()
 {
-    free_all_func_();
+    sandbox_.free();
+}
+
+DynamicLibrary::~DynamicLibrary()
+{
+    dlclose(handle_);
 }

@@ -5,6 +5,6 @@
 
 #include <vector>
 
-std::pair<void*, std::vector<long int>> execute(const AlgorithmLibrary& algorithm, void* input);
+std::pair<void*, std::vector<long int>> execute(AlgorithmLibrary& algorithm, void* input);
 
 #endif //ALGATORC_TESTING_HPP

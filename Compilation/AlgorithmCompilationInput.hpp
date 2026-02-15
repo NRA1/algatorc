@@ -15,8 +15,6 @@ public:
 
     AlgorithmLibrary loadDynamicLibrary();
 
-    std::vector<std::string> wrappedSymbols() const override;
-
 protected:
     std::string buildInputFile() override;
     std::vector<std::filesystem::path> inputDependencies() override;

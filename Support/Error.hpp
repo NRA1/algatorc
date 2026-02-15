@@ -28,8 +28,10 @@ namespace ErrorPhase
 class Error
 {
 public:
-    Error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase);
-    Error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase, const std::string& message);
+    static void setPhase(ErrorPhase::ErrorPhase phase);
+
+    explicit Error(ErrorType::ErrorType type);
+    Error(ErrorType::ErrorType type, const std::string& message);
 
     Error& operator<<(const std::string& message);
     Error& operator<<(const char* message);
@@ -37,11 +39,13 @@ public:
     [[noreturn]] ~Error();
 
 private:
+    static ErrorPhase::ErrorPhase phase_;
+
     std::optional<std::ofstream> outfile_ = std::nullopt;
 };
 
-Error error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase);
-Error error(ErrorType::ErrorType type, ErrorPhase::ErrorPhase phase, const std::string& message);
+Error error(ErrorType::ErrorType type);
+Error error(ErrorType::ErrorType type, const std::string& message);
 
 
 #endif //ALGATORC_ERROR_HANDLER_HPP

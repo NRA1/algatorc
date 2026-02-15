@@ -8,7 +8,7 @@ class AlgorithmLibrary : public DynamicLibrary
 public:
     explicit AlgorithmLibrary(const std::filesystem::path& path);
 
-    void* execute(void* input) const;
+    void* execute(void* input);
 
 private:
     void* (*execute_func_)(void*);

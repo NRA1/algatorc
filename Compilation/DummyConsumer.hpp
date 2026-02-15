@@ -5,6 +5,8 @@
 
 class DummyConsumer final : public clang::DiagnosticConsumer
 {
+public:
+    virtual void HandleDiagnostic(clang::DiagnosticsEngine::Level DiagLevel, const clang::Diagnostic& Info) override;
 };
 
 

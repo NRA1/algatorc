@@ -8,17 +8,17 @@ ProjectLibrary::ProjectLibrary(const std::filesystem::path& path) : DynamicLibra
     serialize_output_func_ = resolve<char*(*)(void*, unsigned int*)>("__serialize_output");
 }
 
-void* ProjectLibrary::deserializeInput(char* bytes, const unsigned int n) const
+void* ProjectLibrary::deserializeInput(char* bytes, const unsigned int n)
 {
-    return guard<void*>("deserialize_input", error_func_, clear_error_func_, [&]()
+    return executeInContext<void*>("deserialize_input", [&]()
     {
         return deserialize_input_func_(bytes, n);
     });
 }
 
-char* ProjectLibrary::serializeOutput(void* output, unsigned int* n) const
+char* ProjectLibrary::serializeOutput(void* output, unsigned int* n)
 {
-    return guard<char*>("serialize_output", error_func_, clear_error_func_, [&]()
+    return executeInContext<char*>("serialize_output", [&]()
     {
         return serialize_output_func_(output, n);
     });

@@ -12,8 +12,9 @@
 
 int main(const int argc, char* argv[])
 {
+    bool force_recompile = false;
 
-    bool force_recompile = true;
+    Error::setPhase(ErrorPhase::Preparation);
 
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))
     {
@@ -22,6 +23,8 @@ int main(const int argc, char* argv[])
     }
 
     Configuration::parse(argc, argv);
+
+    Error::setPhase(ErrorPhase::Compilation);
 
     Compiler compiler{};
 
@@ -32,7 +35,6 @@ int main(const int argc, char* argv[])
 
         project_input.clean();
     }
-    ProjectLibrary project = project_input.loadDynamicLibrary();
 
     AlgorithmCompilationInput algorithm_input;
     if (force_recompile || algorithm_input.compilationNeeded())
@@ -41,17 +43,25 @@ int main(const int argc, char* argv[])
 
         algorithm_input.clean();
     }
+
+    Error::setPhase(ErrorPhase::Setup);
+
+    ProjectLibrary project = project_input.loadDynamicLibrary();
     AlgorithmLibrary algorithm = algorithm_input.loadDynamicLibrary();
 
-    auto [buffer, file_size] = readInputFile();
+    auto [buffer, file_size] = readBinaryFile(Configuration::inputFilePath());
     void* input = project.deserializeInput(buffer, file_size);
 
+    Error::setPhase(ErrorPhase::Execution);
+
     auto [output, times] = execute(algorithm, input);
+
+    Error::setPhase(ErrorPhase::Teardown);
 
     unsigned int output_len;
     char* serialized_output = project.serializeOutput(output, &output_len);
 
-    writeOutputFile(serialized_output, output_len);
+    writeBinaryFile(Configuration::outputFilePath(), serialized_output, output_len);
 
     algorithm.freeAll();
     project.freeAll();

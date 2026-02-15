@@ -13,11 +13,11 @@ void CompilationInput::writeInputFile()
     std::ofstream file;
     file.open(inputFilePath(), std::ios::out | std::ios::trunc);
     if (!file.is_open())
-        error(ErrorType::System, ErrorPhase::Compilation, "Failed to write generated input source file");
+        error(ErrorType::System, "Failed to write generated input source file");
     file << input;
     file.close();
     if (file.fail())
-        error(ErrorType::System, ErrorPhase::Compilation, "Failed to write generated input source file");
+        error(ErrorType::System, "Failed to write generated input source file");
 }
 
 bool CompilationInput::compilationNeeded()
@@ -42,9 +42,4 @@ void CompilationInput::clean()
 {
     if (std::filesystem::exists(objFilePath()))
         std::filesystem::remove(objFilePath());
-}
-
-std::vector<std::string> CompilationInput::wrappedSymbols() const
-{
-    return {};
 }
