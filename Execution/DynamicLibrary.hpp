@@ -49,13 +49,15 @@ T DynamicLibrary::resolve(const std::string& name)
 template <typename T>
 T DynamicLibrary::executeInContext(const char* name, const std::function<T()>& func)
 {
-    return guard<T>(name, error_func_, clear_error_func_, [&]()
-    {
-        return sandbox_.apply<T>([&]()
-        {
-            return func();
-        });
-    });
+    return guard<T>(name,
+        [this]{ return sandbox_.apply<char*>([this] { return error_func_(); }); },
+        [this]{ sandbox_.apply<void>([this] { clear_error_func_(); }); },
+        [&] {
+            return sandbox_.apply<T>([&]()
+            {
+                return func();
+            });
+        }, [&] { sandbox_.cleanupFailedApply(); });
 }
 
 

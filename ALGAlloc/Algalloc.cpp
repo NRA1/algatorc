@@ -3,14 +3,18 @@
 #include "Algalloc.hpp"
 
 #include <cstdlib>
+#include <mutex>
 
 void** g_last_alloc = nullptr;
+std::mutex g_last_alloc_mutex;
+
 bool g_sandboxed = false;
 
-//TODO: multithreading + alignment
+//TODO: alignment
 
 void* wire_allocation(void* p)
 {
+    std::lock_guard<std::mutex> lock(g_last_alloc_mutex);
     void** ptr = static_cast<void**>(p);
     if (g_last_alloc != nullptr)
         g_last_alloc[1] = ptr;
@@ -52,8 +56,12 @@ void sandbox_free(void* p)
     void** next = static_cast<void**>(ptr[1]);
     if (prev != nullptr) prev[1] = next;
     if (next != nullptr) next[0] = prev;
-    if (g_last_alloc == ptr)
-        g_last_alloc = prev;
+
+    {
+        std::lock_guard<std::mutex> lock(g_last_alloc_mutex);
+        if (g_last_alloc == ptr)
+            g_last_alloc = prev;
+    }
     real_free(ptr);
 }
 void free(void* p)
@@ -226,6 +234,17 @@ void* pvalloc(size_t size)
     return real_pvalloc(size);
 }
 
+template<>
+void MemorySandbox::apply<void>(const std::function<void()>& func)
+{
+    applyVoid(func);
+}
+
+void MemorySandbox::cleanupFailedApply()
+{
+    cleanup();
+}
+
 void MemorySandbox::applyVoid(const std::function<void()>& func)
 {
     if (g_sandboxed == true)
@@ -234,9 +253,21 @@ void MemorySandbox::applyVoid(const std::function<void()>& func)
         exit(-1);
     }
 
+    prepare();
+    func();
+    cleanup();
+}
+
+void MemorySandbox::prepare() const
+{
+    std::lock_guard<std::mutex> lock(g_last_alloc_mutex);
     g_last_alloc = last_alloc_;
     g_sandboxed = true;
-    func();
+}
+
+void MemorySandbox::cleanup()
+{
+    std::lock_guard<std::mutex> lock(g_last_alloc_mutex);
     g_sandboxed = false;
     last_alloc_ = g_last_alloc;
     g_last_alloc = nullptr;

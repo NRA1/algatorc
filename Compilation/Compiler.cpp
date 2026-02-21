@@ -62,7 +62,7 @@ void Compiler::compile(CompilationInput& input)
     std::vector<const char *> args;
     for (std::string& arg : default_args_)
         args.push_back(arg.c_str());
-    
+
     const std::string output_flag = std::string("-o") + input.outputFilePath().c_str();
     args.push_back(output_flag.c_str());
 

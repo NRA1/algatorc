@@ -5,21 +5,24 @@
 
 #include "Error.hpp"
 
-void guardVoid(const std::string& source, char* (*err)(), void (*clear_err)(), const std::function<void()>& func);
+void guardVoid(const std::string& source, const std::function<char*()>& err, const std::function<void()>& clear_err,
+    const std::function<void()>& func, const std::function<void()>& on_failure = []{});
 
 template<typename T>
-T guard(const std::string& source, char* (*error)(), void (*clear_error)(), const std::function<T()>& func)
+T guard(const std::string& source, const std::function<char*()>& err, const std::function<void()>& clear_err,
+    const std::function<T()>& func, const std::function<void()>& on_failure = []{})
 {
     T res;
-    guardVoid(source, error, clear_error, [&]()
+    guardVoid(source, err, clear_err, [&]()
     {
         res = func();
-    });
+    }, on_failure);
     return res;
 }
 
 template<>
-void guard<void>(const std::string& source, char* (*error)(), void (*clear_error)(), const std::function<void()>& func);
+void guard<void>(const std::string& source, const std::function<char*()>& err, const std::function<void()>& clear_err,
+    const std::function<void()>& func, const std::function<void()>& on_failure);
 
 void guardInternal(const std::function<void()>& func);
 

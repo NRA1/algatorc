@@ -11,12 +11,17 @@ public:
     template<typename T>
     T apply(const std::function<T()>& func);
 
+    void cleanupFailedApply();
 
     void free();
 
     ~MemorySandbox();
 private:
     void applyVoid(const std::function<void()>& func);
+
+    void prepare() const;
+    void cleanup();
+
     void** last_alloc_ = nullptr;
 };
 
@@ -31,5 +36,7 @@ T MemorySandbox::apply(const std::function<T()>& func)
     return result;
 }
 
+template<>
+void MemorySandbox::apply<void>(const std::function<void()>& func);
 
 #endif //ALGATORC_ALGALLOC_HPP
