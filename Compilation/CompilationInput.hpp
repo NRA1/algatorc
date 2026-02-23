@@ -40,7 +40,7 @@ T CompilationInput::loadDynamicLibrary()
     const std::filesystem::path path = outputFilePath();
     if (!std::filesystem::exists(path))
     {
-        error(ErrorType::System, "Tried to load dynamic library from path ") << path << " but the path does not exist";
+        error(ErrorType::System, "Tried to load dynamic library from path ") << path.string() << " but the path does not exist";
     }
 
     return T(path);

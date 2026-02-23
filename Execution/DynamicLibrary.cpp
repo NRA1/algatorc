@@ -6,10 +6,10 @@
 
 DynamicLibrary::DynamicLibrary(const std::filesystem::path& path)
 {
-    handle_ = dlopen(path.c_str(), RTLD_NOW);
+    handle_ = dlopen(path.string().c_str(), RTLD_NOW);
     if (!handle_)
     {
-        error(ErrorType::System, "Failed to load dynamic library from path ") << path << ": " << dlerror();
+        error(ErrorType::System, "Failed to load dynamic library from path ") << path.string() << ": " << dlerror();
     }
 
     error_func_ = resolve<char*(*)()>("__error");

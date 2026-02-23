@@ -27,7 +27,7 @@ std::filesystem::path AlgorithmCompilationInput::inputFilePath()
 
 std::filesystem::path AlgorithmCompilationInput::outputFilePath()
 {
-    return Configuration::algorithmBinDir() / "algorithm" SOURCE_EXTENSION ".so";
+    return Configuration::algorithmBinDir() / "algorithm" SOURCE_EXTENSION DYLIB_EXTENSION;
 }
 
 AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()

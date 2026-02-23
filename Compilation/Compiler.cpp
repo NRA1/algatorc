@@ -63,10 +63,10 @@ void Compiler::compile(CompilationInput& input)
     for (std::string& arg : default_args_)
         args.push_back(arg.c_str());
 
-    const std::string output_flag = std::string("-o") + input.outputFilePath().c_str();
+    const std::string output_flag = std::string("-o") + input.outputFilePath().string();
     args.push_back(output_flag.c_str());
 
-    const std::string input_file = input.inputFilePath();
+    const std::string input_file = input.inputFilePath().string();
     args.push_back(input_file.c_str());
 
     // ReSharper disable once CppDFAMemoryLeak // Deleted by DiagnosticsEngine

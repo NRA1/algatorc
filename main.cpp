@@ -1,6 +1,5 @@
 #include <cstring>
 #include <filesystem>
-#include <iostream>
 
 #include "Compilation/AlgorithmCompilationInput.hpp"
 #include "Support/Configuration.hpp"
@@ -12,7 +11,7 @@
 
 int main(const int argc, char* argv[])
 {
-    bool force_recompile = false;
+    bool force_recompile = true;
 
     Error::setPhase(ErrorPhase::Preparation);
 

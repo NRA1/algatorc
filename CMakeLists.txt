@@ -5,8 +5,13 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_subdirectory(ALGAlloc)
 
-find_package(Clang 21.1.6 REQUIRED)
-find_package(LLVM 21.1.6 REQUIRED)
+find_package(Clang 21.1 REQUIRED)
+find_package(LLVM 21.1 REQUIRED)
+
+if(WIN32)
+    find_package(dlfcn-win32 REQUIRED)
+    set(CMAKE_DL_LIBS dlfcn-win32::dl)
+endif ()
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
@@ -61,7 +66,8 @@ target_compile_definitions(algatorc PUBLIC ALGATORC)
 target_link_libraries(algatorc PRIVATE clang clang-cpp)
 target_link_libraries(algatorc PRIVATE LLVM)
 target_include_directories(algatorc PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(algatorc PRIVATE algalloc)
+target_link_libraries(algatorc PRIVATE algalloc_dummy)
+target_link_libraries(algatorc PRIVATE ${CMAKE_DL_LIBS})
 
 add_executable(algatorcpp main.cpp
         Support/Configuration.cpp
@@ -95,6 +101,7 @@ add_executable(algatorcpp main.cpp
         Execution/Execution.cpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
 target_link_libraries(algatorcpp PRIVATE clang clang-cpp)
-target_link_libraries(algatorcpp PRIVATE LLVM)
+target_link_libraries(algatorcpp PRIVATE LLVM-21)
 target_include_directories(algatorcpp PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(algatorcpp PRIVATE algalloc)
+target_link_libraries(algatorcpp PUBLIC algalloc_dummy)
+target_link_libraries(algatorcpp PRIVATE ${CMAKE_DL_LIBS})

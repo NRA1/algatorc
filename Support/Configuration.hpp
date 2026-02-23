@@ -16,6 +16,16 @@
 
 #endif
 
+#ifdef __linux__
+
+#define DYLIB_EXTENSION ".so"
+
+#elifdef WIN32
+
+#define DYLIB_EXTENSION ".dll"
+
+#endif
+
 class Configuration
 {
 public:

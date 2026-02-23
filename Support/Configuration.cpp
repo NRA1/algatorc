@@ -93,27 +93,27 @@ void Configuration::parse(int argc, char* argv[])
 
     std::filesystem::path input_file_path = io_filename_root.string() + ".input";
     if (!std::filesystem::exists(input_file_path))
-        error(ErrorType::System) << "Input file " << input_file_path << " does not exist.";
+        error(ErrorType::System) << "Input file " << input_file_path.string() << " does not exist.";
 
     std::filesystem::path project_dir = (data_root_path / "projects" / "PROJ-").concat(project_name);
     if (!std::filesystem::exists(project_dir))
-        error(ErrorType::System) << "Project directory " << project_dir << " does not exist.";
+        error(ErrorType::System) << "Project directory " << project_dir.string() << " does not exist.";
 
     std::filesystem::path input_src_file_path = project_dir / "proj" / PROJECT_SOURCE_DIR_NAME / "input" SOURCE_EXTENSION;
     if (!std::filesystem::exists(input_src_file_path))
-        error(ErrorType::System) << "Input source file " << input_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Input source file " << input_src_file_path.string() << " does not exist.";
 
     std::filesystem::path output_src_file_path = project_dir / "proj" / PROJECT_SOURCE_DIR_NAME / "output" SOURCE_EXTENSION;
     if (!std::filesystem::exists(output_src_file_path))
-        error(ErrorType::System) << "Output source file " << output_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Output source file " << output_src_file_path.string() << " does not exist.";
 
     std::filesystem::path data_converter_src_file_path = project_dir / "proj" / PROJECT_SOURCE_DIR_NAME / "data_converter" SOURCE_EXTENSION;
     if (!std::filesystem::exists(data_converter_src_file_path))
-        error(ErrorType::System) << "Data converter source file " << data_converter_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Data converter source file " << data_converter_src_file_path.string() << " does not exist.";
 
     std::filesystem::path algorithm_src_file_path = project_dir / "algs" / (std::string("ALG-") + algorithm_name) / "src" / "algorithm" SOURCE_EXTENSION;
     if (!std::filesystem::exists(algorithm_src_file_path))
-        error(ErrorType::System) << "Algorithm source file " << algorithm_src_file_path << " does not exist.";
+        error(ErrorType::System) << "Algorithm source file " << algorithm_src_file_path.string() << " does not exist.";
 
     std::filesystem::path output_file_path = io_filename_root.string() + ".output";
     std::filesystem::path status_file_path = io_filename_root.string() + ".status";

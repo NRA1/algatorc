@@ -7,6 +7,10 @@
 #include <mutex>
 #include <unistd.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 // Holds a linked list of all non-freed allocations.
 // Every node is structured like:
 // 0< |    ... user data ...      |
@@ -225,6 +229,22 @@ size_t malloc_usable_size(void* ptr)
     return real_malloc_usable_size(ptr);
 }
 
+long int g_page_size = -1;
+long int getPageSize()
+{
+    if (g_page_size == -1)
+    {
+#ifdef __linux__
+        g_page_size = sysconf(_SC_PAGESIZE);
+#elifdef WIN32
+        SYSTEM_INFO si;
+        GetSystemInfo(&si);
+        g_page_size = si.dwPageSize;
+#endif
+    }
+    return g_page_size;
+}
+
 void* (*g_real_valloc_sym)(size_t) = nullptr;
 void* real_valloc(const size_t size)
 {
@@ -234,7 +254,7 @@ void* real_valloc(const size_t size)
 }
 void* sandbox_valloc(const size_t size)
 {
-    return sandbox_memalign(sysconf(_SC_PAGESIZE), size);
+    return sandbox_memalign(getPageSize(), size);
 }
 void* valloc(size_t size)
 {
@@ -251,7 +271,7 @@ void* real_pvalloc(const size_t size)
 }
 void* sandbox_pvalloc(size_t size)
 {
-    const long int page_size = sysconf(_SC_PAGESIZE);
+    const long int page_size = getPageSize();
     const size_t ceiled_size = ((size + 3 * sizeof(void*)) + page_size - 1) / page_size;
     return sandbox_valloc(ceiled_size);
 }

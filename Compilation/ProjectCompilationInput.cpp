@@ -27,14 +27,13 @@ std::filesystem::path ProjectCompilationInput::inputFilePath()
 
 std::filesystem::path ProjectCompilationInput::outputFilePath()
 {
-    return Configuration::projectBinDir() / "project" SOURCE_EXTENSION ".so";
+    return Configuration::projectBinDir() / "project" SOURCE_EXTENSION DYLIB_EXTENSION;
 }
 
 ProjectLibrary ProjectCompilationInput::loadDynamicLibrary()
 {
     return CompilationInput::loadDynamicLibrary<ProjectLibrary>();
 }
-
 
 std::string ProjectCompilationInput::buildInputFile()
 {
