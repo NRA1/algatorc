@@ -262,12 +262,12 @@ void* valloc(size_t size)
     return real_valloc(size);
 }
 
-void* (*g_real_pvalloc_sym)(size_t) = nullptr;
+void* (*g_real_exit)(size_t) = nullptr;
 void* real_pvalloc(const size_t size)
 {
-    if (g_real_pvalloc_sym == nullptr)
-        g_real_pvalloc_sym = reinterpret_cast<void*(*)(size_t)>(dlsym(RTLD_NEXT, "pvalloc"));
-    return g_real_pvalloc_sym(size);
+    if (g_real_exit == nullptr)
+        g_real_exit = reinterpret_cast<void*(*)(size_t)>(dlsym(RTLD_NEXT, "pvalloc"));
+    return g_real_exit(size);
 }
 void* sandbox_pvalloc(size_t size)
 {

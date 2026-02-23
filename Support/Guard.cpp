@@ -6,6 +6,8 @@
 #include <mutex>
 #include <thread>
 
+#include "../ALGExit/Algexit.hpp"
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -183,7 +185,7 @@ static void crashRecoverySignalHandler(const int signal)
 static void installExceptionOrSignalHandlers()
 {
     // Setup the signal handler.
-    struct sigaction handler;
+    struct sigaction handler{};
     handler.sa_handler = crashRecoverySignalHandler;
     handler.sa_flags = 0;
     sigemptyset(&handler.sa_mask);
@@ -306,7 +308,7 @@ static void uninstallExceptionOrSignalHandlers()
 GuardContext::GuardContext()
 {
     // On Windows, if abort() was previously triggered (and caught by a previous
-    // CrashRecoveryContext) the Windows CRT removes our installed signal handler,
+    // GuardContext) the Windows CRT removes our installed signal handler,
     // so we need to install it again.
     disableSystemDialogsOnCrash();
 }
@@ -391,10 +393,15 @@ void guardVoid(const std::string& source, const std::function<char*()>& err, con
     GuardContext ctx;
     GuardContext::enable();
 
-    const bool failed = !ctx.runSafelyOnThread([&]()
+    bool termination_attempted = false;
+    int termination_exit_code = 0;
+    const bool failed = !terminationInterceptorApply<bool>([&]
     {
-        func();
-    }, on_failure);
+        return ctx.runSafelyOnThread([&]()
+       {
+           func();
+       }, on_failure);
+    }, termination_attempted, termination_exit_code);
 
     std::optional<std::string> msg;
     const char* err_msg = err();
@@ -402,6 +409,10 @@ void guardVoid(const std::string& source, const std::function<char*()>& err, con
     {
         msg = std::string(err_msg);
         clear_err();
+    }
+    else if (termination_attempted)
+    {
+        msg = std::string("Termination attempted with exit code ") + std::to_string(termination_exit_code);
     }
     else if (failed)
     {
