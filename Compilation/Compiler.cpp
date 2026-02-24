@@ -99,9 +99,12 @@ void Compiler::compile(CompilationInput& input)
             if (!std::filesystem::exists(outfile_path))
                 error(ErrorType::System, "Compilation failed but compilation output file was not created");
             const std::string compilation_output = readTextFile(outfile_path);
+            std::filesystem::remove(outfile_path);
 
             error(ErrorType::User, "Compilation failed:\n") << compilation_output;
         }
+
+        std::filesystem::remove(outfile_path);
         delete compilation;
     }
     else error(ErrorType::System, "Failed to build compilation");

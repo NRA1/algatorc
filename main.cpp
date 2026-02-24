@@ -12,8 +12,6 @@
 
 int main(const int argc, char* argv[])
 {
-    bool force_recompile = true;
-
     Error::setPhase(ErrorPhase::Preparation);
 
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))
@@ -29,7 +27,7 @@ int main(const int argc, char* argv[])
     Compiler compiler{};
 
     ProjectCompilationInput project_input;
-    if (force_recompile || project_input.compilationNeeded())
+    if (project_input.compilationNeeded())
     {
         compiler.compile(project_input);
 
@@ -37,7 +35,7 @@ int main(const int argc, char* argv[])
     }
 
     AlgorithmCompilationInput algorithm_input;
-    if (force_recompile || algorithm_input.compilationNeeded())
+    if (algorithm_input.compilationNeeded())
     {
         compiler.compile(algorithm_input);
 

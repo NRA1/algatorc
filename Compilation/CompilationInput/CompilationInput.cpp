@@ -47,4 +47,6 @@ void CompilationInput::clean()
 {
     if (std::filesystem::exists(objFilePath()))
         std::filesystem::remove(objFilePath());
+    if (std::filesystem::exists(inputFilePath()))
+        std::filesystem::remove(inputFilePath());
 }

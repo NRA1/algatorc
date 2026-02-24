@@ -135,7 +135,8 @@ bool Configuration::initialized()
 }
 
 void Configuration::parseFlags(const char* flag, const char* path,
-                               std::optional<std::filesystem::path>& data_root_path, std::optional<std::filesystem::path>& data_local_path)
+                               std::optional<std::filesystem::path>& data_root_path,
+                               std::optional<std::filesystem::path>& data_local_path)
 {
     if (strcmp(flag, "-dr") == 0)
     {
