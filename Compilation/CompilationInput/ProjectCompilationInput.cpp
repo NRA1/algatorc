@@ -9,11 +9,15 @@
 #include <Templates/OutputByteBuf.hpp>
 
 #include "../TranslationUnit.hpp"
-#include "../FunctionValidator/CDeserializeInputValidator.hpp"
-#include "../FunctionValidator/CppDeserializeInputValidator.hpp"
-#include "../FunctionValidator/CppSerializeOutputValidator.hpp"
-#include "../FunctionValidator/CSerializeOutputValidator.hpp"
+#include "../CodeValidator/CDeserializeInputValidator.hpp"
+#include "../CodeValidator/CppDeserializeInputValidator.hpp"
+#include "../CodeValidator/CppSerializeOutputValidator.hpp"
+#include "../CodeValidator/CSerializeOutputValidator.hpp"
+#include "../CodeValidator/InputValidator.hpp"
+#include "../CodeValidator/OutputValidator.hpp"
 #include "../TranslationInput/DataConverterTranslationInput.hpp"
+#include "../TranslationInput/InputTranslationInput.hpp"
+#include "../TranslationInput/OutputTranslationInput.hpp"
 
 ProjectCompilationInput::ProjectCompilationInput()
 {
@@ -30,61 +34,7 @@ ProjectCompilationInput::ProjectCompilationInput()
         error(ErrorType::System, "Failed to create binary directories: ") << e.what();
     }
 
-    DataConverterTranslationInput data_converter_input{};
-    const TranslationUnit unit{data_converter_input};
-
-    const bool c_deserialize_input = unit.contains(CDeserializeInputValidator{});
-#ifdef ALGATORCPP
-    const bool cpp_deserialize_input = unit.contains(CppDeserializeInputValidator{});
-#else
-    const bool cpp_deserialize_input = false;
-#endif
-    if (c_deserialize_input && cpp_deserialize_input)
-    {
-        std::cout << "Found both C and C++ versions of \"deserialize_input\". Will use C version.";
-        use_cpp_deserialize_input_ = false;
-    }
-    else if (cpp_deserialize_input) use_cpp_deserialize_input_ = true;
-    else if (c_deserialize_input) use_cpp_deserialize_input_ = false;
-    else
-    {
-#ifdef ALGATORCPP
-        error(ErrorType::User, "Neither C nor C++ version of \"deserialize_input\" is defined. Define a"
-                               " deserialization function either with format"
-                               " \"input* deserialize_input(char*, unsigned int)\""
-                               " or format \"input* deserialize_input(std:istream&)\".");
-#else
-        error(ErrorType::User, "\"deserialize_input\" is not defined. Define a deserialization function with format"
-                       " \"input* deserialize_input(char*, const unsigned int)\".");
-#endif
-    }
-
-    //TODO: validate other
-    const bool c_serialize_output = unit.contains(CSerializeOutputValidator{});
-#ifdef ALGATORCPP
-    const bool cpp_serialize_output = unit.contains(CppSerializeOutputValidator{});
-#else
-    const bool cpp_serialize_output = false;
-#endif
-    if (c_serialize_output && cpp_serialize_output)
-    {
-        std::cout << "Found both C and C++ versions of \"serialize_output\". Will use C version.";
-        use_cpp_serialize_output_ = false;
-    }
-    else if (cpp_serialize_output) use_cpp_serialize_output_ = true;
-    else if (c_serialize_output) use_cpp_serialize_output_ = false;
-    else
-    {
-#ifdef ALGATORCPP
-        error(ErrorType::User, "Neither C nor C++ version of \"serialize_output\" is defined. Define a"
-                               " serialization function either with format"
-                               " \"char* serialize_output(output*, unsigned int*)\""
-                               " or format \"void serialize_output(std:ostream&, output*)\".");
-#else
-        error(ErrorType::User, "\"serialize_output\" is not defined. Define a serialization function with format"
-                       " \"char* serialize_output(output*, unsigned int*)\".");
-#endif
-    }
+    validateSourceFiles();
 }
 
 std::filesystem::path ProjectCompilationInput::inputFilePath()
@@ -108,6 +58,94 @@ std::vector<std::string> ProjectCompilationInput::compilationDefines()
 ProjectLibrary ProjectCompilationInput::loadDynamicLibrary()
 {
     return CompilationInput::loadDynamicLibrary<ProjectLibrary>();
+}
+
+void ProjectCompilationInput::validateSourceFiles()
+{
+    InputTranslationInput input_translation_input{};
+    const TranslationUnit input_unit{input_translation_input};
+    if (!input_unit.contains(InputValidator{}))
+    {
+#ifdef ALGATORCPP
+        error(ErrorType::User, "\"input\" structure not defined. Define algorithm input (either a class or"
+                               " a struct) with name \"input\" in \"input" SOURCE_EXTENSION "\".");
+#else
+        error(ErrorType::User, "\"input\" structure not defined. Define algorithm input (a struct) with name \"input\""
+                               " in \"input" SOURCE_EXTENSION "\".");
+#endif
+    }
+
+    OutputTranslationInput output_translation_input{};
+    const TranslationUnit output_unit{output_translation_input};
+    if (!output_unit.contains(OutputValidator{}))
+    {
+#ifdef ALGATORCPP
+        error(ErrorType::User, "\"output\" structure not defined. Define algorithm output (either a class or"
+                               " a struct) with name \"output\" in \"output" SOURCE_EXTENSION "\".");
+#else
+        error(ErrorType::User, "\"output\" structure not defined. Define algorithm output (a struct) with name "
+                               "\"output\" in \"output" SOURCE_EXTENSION "\".");
+#endif
+    }
+
+    DataConverterTranslationInput data_converter_input{};
+    const TranslationUnit data_converter_unit{data_converter_input};
+
+    const bool c_deserialize_input = data_converter_unit.contains(CDeserializeInputValidator{});
+#ifdef ALGATORCPP
+    const bool cpp_deserialize_input = data_converter_unit.contains(CppDeserializeInputValidator{});
+#else
+    const bool cpp_deserialize_input = false;
+#endif
+    if (c_deserialize_input && cpp_deserialize_input)
+    {
+        std::cout << "Found both C and C++ versions of \"deserialize_input\". Will use C version.";
+        use_cpp_deserialize_input_ = false;
+    }
+    else if (cpp_deserialize_input) use_cpp_deserialize_input_ = true;
+    else if (c_deserialize_input) use_cpp_deserialize_input_ = false;
+    else
+    {
+#ifdef ALGATORCPP
+        error(ErrorType::User, "Neither C nor C++ version of \"deserialize_input\" is defined. Define a"
+                               " deserialization function either with format"
+                               " \"input* deserialize_input(char*, unsigned int)\""
+                               " or format \"input* deserialize_input(std:istream&)\" in \"data_converter"
+                               SOURCE_EXTENSION "\".");
+#else
+        error(ErrorType::User, "\"deserialize_input\" is not defined. Define a deserialization function with format"
+                                " \"struct input* deserialize_input(char*, const unsigned int)\" in \"data_converter"
+                                SOURCE_EXTENSION "\".");
+#endif
+    }
+
+    const bool c_serialize_output = data_converter_unit.contains(CSerializeOutputValidator{});
+#ifdef ALGATORCPP
+    const bool cpp_serialize_output = data_converter_unit.contains(CppSerializeOutputValidator{});
+#else
+    const bool cpp_serialize_output = false;
+#endif
+    if (c_serialize_output && cpp_serialize_output)
+    {
+        std::cout << "Found both C and C++ versions of \"serialize_output\". Will use C version.";
+        use_cpp_serialize_output_ = false;
+    }
+    else if (cpp_serialize_output) use_cpp_serialize_output_ = true;
+    else if (c_serialize_output) use_cpp_serialize_output_ = false;
+    else
+    {
+#ifdef ALGATORCPP
+        error(ErrorType::User, "Neither C nor C++ version of \"serialize_output\" is defined. Define a"
+                               " serialization function either with format"
+                               " \"char* serialize_output(output*, unsigned int*)\""
+                               " or format \"void serialize_output(std:ostream&, output*)\" in \"data_converter"
+                               SOURCE_EXTENSION "\".");
+#else
+        error(ErrorType::User, "\"serialize_output\" is not defined. Define a serialization function with format"
+                                " \"char* serialize_output(struct output*, unsigned int*)\" in \"data_converter"
+                                SOURCE_EXTENSION "\".");
+#endif
+    }
 }
 
 std::string ProjectCompilationInput::buildInputFile()

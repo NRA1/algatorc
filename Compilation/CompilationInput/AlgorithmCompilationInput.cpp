@@ -4,6 +4,10 @@
 #include <Templates/Algorithm.hpp>
 #include <Templates/ErrorReporting.hpp>
 
+#include "../TranslationUnit.hpp"
+#include "../CodeValidator/ExecuteValidator.hpp"
+#include "../TranslationInput/AlgorithmTranslationInput.hpp"
+
 AlgorithmCompilationInput::AlgorithmCompilationInput()
 {
     try
@@ -18,6 +22,8 @@ AlgorithmCompilationInput::AlgorithmCompilationInput()
     {
         error(ErrorType::System, "Failed to create binary directories: ") << e.what();
     }
+
+    validateSourceFiles();
 }
 
 std::filesystem::path AlgorithmCompilationInput::inputFilePath()
@@ -33,6 +39,23 @@ std::filesystem::path AlgorithmCompilationInput::outputFilePath()
 AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()
 {
     return CompilationInput::loadDynamicLibrary<AlgorithmLibrary>();
+}
+
+void AlgorithmCompilationInput::validateSourceFiles()
+{
+    AlgorithmTranslationInput input{};
+    const TranslationUnit unit{input};
+
+    if (!unit.contains(ExecuteValidator{}))
+    {
+#ifdef ALGATORCPP
+        error(ErrorType::User, "\"execute\" function not defined. Define algorithm entry point with format"
+                               " \"output* execute(input*)\" in \"algorithm" SOURCE_EXTENSION "\".");
+#else
+        error(ErrorType::User, "\"execute\" function not defined. Define algorithm entry point with format"
+                               " \"struct output* execute(struct input*)\" in \"algorithm" SOURCE_EXTENSION "\".");
+#endif
+    }
 }
 
 std::string AlgorithmCompilationInput::buildInputFile()

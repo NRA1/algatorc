@@ -1,5 +1,6 @@
 #include <cstring>
 #include <filesystem>
+#include <iostream>
 
 #include "Compilation/CompilationInput/AlgorithmCompilationInput.hpp"
 #include "Support/Configuration.hpp"

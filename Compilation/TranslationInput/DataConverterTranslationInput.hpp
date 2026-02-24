@@ -6,9 +6,9 @@
 class DataConverterTranslationInput : public TranslationInput
 {
 public:
-    DataConverterTranslationInput();
+    DataConverterTranslationInput() = default;
 
-    const std::filesystem::path& sourcePath() const;
+    const std::filesystem::path& sourcePath() const override;
     std::string inputSource() override;
 };
 

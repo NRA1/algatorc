@@ -14,5 +14,5 @@ bool CppSerializeOutputValidator::validateArguments(const std::vector<std::strin
 {
     if (arguments.size() != 2) return false;
     if (arguments[0] != "ostream &" && arguments[0] != "std::ostream &") return false;
-    return arguments[1] == "output *";
+    return arguments[1] == "output *" || arguments[1] == "struct output *";
 }

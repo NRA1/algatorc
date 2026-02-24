@@ -17,6 +17,8 @@ public:
     ProjectLibrary loadDynamicLibrary();
 
 protected:
+    void validateSourceFiles();
+
     std::string buildInputFile() override;
     std::vector<std::filesystem::path> inputDependencies() override;
 

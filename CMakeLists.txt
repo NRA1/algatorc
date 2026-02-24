@@ -79,22 +79,38 @@ add_executable(algatorc main.cpp
         Execution/Execution.cpp
         Compilation/TranslationUnit.cpp
         Compilation/TranslationUnit.hpp
-        Compilation/FunctionValidator/FunctionValidator.cpp
-        Compilation/FunctionValidator/FunctionValidator.hpp
-        Compilation/FunctionValidator/CSerializeOutputValidator.cpp
-        Compilation/FunctionValidator/CSerializeOutputValidator.hpp
+        Compilation/CodeValidator/FunctionValidator.cpp
+        Compilation/CodeValidator/FunctionValidator.hpp
+        Compilation/CodeValidator/CSerializeOutputValidator.cpp
+        Compilation/CodeValidator/CSerializeOutputValidator.hpp
         Compilation/TranslationInput/TranslationInput.cpp
         Compilation/TranslationInput/TranslationInput.hpp
         Compilation/TranslationInput/DataConverterTranslationInput.cpp
         Compilation/TranslationInput/DataConverterTranslationInput.hpp
-        Compilation/FunctionValidator/CDeserializeInputValidator.cpp
-        Compilation/FunctionValidator/CDeserializeInputValidator.hpp
-        Compilation/FunctionValidator/CppDeserializeInputValidator.cpp
-        Compilation/FunctionValidator/CppDeserializeInputValidator.hpp
-        Compilation/FunctionValidator/CppSerializeOutputValidator.cpp
-        Compilation/FunctionValidator/CppSerializeOutputValidator.hpp)
+        Compilation/CodeValidator/CDeserializeInputValidator.cpp
+        Compilation/CodeValidator/CDeserializeInputValidator.hpp
+        Compilation/CodeValidator/CppDeserializeInputValidator.cpp
+        Compilation/CodeValidator/CppDeserializeInputValidator.hpp
+        Compilation/CodeValidator/CppSerializeOutputValidator.cpp
+        Compilation/CodeValidator/CppSerializeOutputValidator.hpp
+        Compilation/CodeValidator/ExecuteValidator.cpp
+        Compilation/CodeValidator/ExecuteValidator.hpp
+        Compilation/TranslationInput/AlgorithmTranslationInput.cpp
+        Compilation/TranslationInput/AlgorithmTranslationInput.hpp
+        Compilation/CodeValidator/CodeValidator.cpp
+        Compilation/CodeValidator/CodeValidator.hpp
+        Compilation/CodeValidator/ClassValidator.cpp
+        Compilation/CodeValidator/ClassValidator.hpp
+        Compilation/CodeValidator/OutputValidator.cpp
+        Compilation/CodeValidator/OutputValidator.hpp
+        Compilation/CodeValidator/InputValidator.cpp
+        Compilation/CodeValidator/InputValidator.hpp
+        Compilation/TranslationInput/InputTranslationInput.cpp
+        Compilation/TranslationInput/InputTranslationInput.hpp
+        Compilation/TranslationInput/OutputTranslationInput.cpp
+        Compilation/TranslationInput/OutputTranslationInput.hpp)
 target_compile_definitions(algatorc PUBLIC ALGATORC)
-target_link_libraries(algatorc PRIVATE clang clang-cpp)
+target_link_libraries(algatorc PRIVATE libclang clang clang-cpp)
 target_link_libraries(algatorc PRIVATE LLVM)
 target_include_directories(algatorc PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(algatorc PRIVATE ${CMAKE_DL_LIBS})
@@ -140,20 +156,36 @@ add_executable(algatorcpp main.cpp
         Execution/Execution.cpp
         Compilation/TranslationUnit.cpp
         Compilation/TranslationUnit.hpp
-        Compilation/FunctionValidator/FunctionValidator.cpp
-        Compilation/FunctionValidator/FunctionValidator.hpp
-        Compilation/FunctionValidator/CSerializeOutputValidator.cpp
-        Compilation/FunctionValidator/CSerializeOutputValidator.hpp
+        Compilation/CodeValidator/FunctionValidator.cpp
+        Compilation/CodeValidator/FunctionValidator.hpp
+        Compilation/CodeValidator/CSerializeOutputValidator.cpp
+        Compilation/CodeValidator/CSerializeOutputValidator.hpp
         Compilation/TranslationInput/TranslationInput.cpp
         Compilation/TranslationInput/TranslationInput.hpp
         Compilation/TranslationInput/DataConverterTranslationInput.cpp
         Compilation/TranslationInput/DataConverterTranslationInput.hpp
-        Compilation/FunctionValidator/CDeserializeInputValidator.cpp
-        Compilation/FunctionValidator/CDeserializeInputValidator.hpp
-        Compilation/FunctionValidator/CppDeserializeInputValidator.cpp
-        Compilation/FunctionValidator/CppDeserializeInputValidator.hpp
-        Compilation/FunctionValidator/CppSerializeOutputValidator.cpp
-        Compilation/FunctionValidator/CppSerializeOutputValidator.hpp)
+        Compilation/CodeValidator/CDeserializeInputValidator.cpp
+        Compilation/CodeValidator/CDeserializeInputValidator.hpp
+        Compilation/CodeValidator/CppDeserializeInputValidator.cpp
+        Compilation/CodeValidator/CppDeserializeInputValidator.hpp
+        Compilation/CodeValidator/CppSerializeOutputValidator.cpp
+        Compilation/CodeValidator/CppSerializeOutputValidator.hpp
+        Compilation/CodeValidator/ExecuteValidator.cpp
+        Compilation/CodeValidator/ExecuteValidator.hpp
+        Compilation/TranslationInput/AlgorithmTranslationInput.cpp
+        Compilation/TranslationInput/AlgorithmTranslationInput.hpp
+        Compilation/CodeValidator/CodeValidator.cpp
+        Compilation/CodeValidator/CodeValidator.hpp
+        Compilation/CodeValidator/ClassValidator.cpp
+        Compilation/CodeValidator/ClassValidator.hpp
+        Compilation/CodeValidator/OutputValidator.cpp
+        Compilation/CodeValidator/OutputValidator.hpp
+        Compilation/CodeValidator/InputValidator.cpp
+        Compilation/CodeValidator/InputValidator.hpp
+        Compilation/TranslationInput/InputTranslationInput.cpp
+        Compilation/TranslationInput/InputTranslationInput.hpp
+        Compilation/TranslationInput/OutputTranslationInput.cpp
+        Compilation/TranslationInput/OutputTranslationInput.hpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
 target_link_libraries(algatorcpp PRIVATE libclang clang clang-cpp)
 target_link_libraries(algatorcpp PRIVATE LLVM-21)

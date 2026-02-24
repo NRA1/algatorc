@@ -7,7 +7,7 @@ bool CDeserializeInputValidator::validateName(const std::string& name) const
 
 bool CDeserializeInputValidator::validateReturnType(const std::string& type) const
 {
-    return type == "input *";
+    return type == "input *" || type == "struct input *";
 }
 
 bool CDeserializeInputValidator::validateArguments(const std::vector<std::string>& arguments) const
