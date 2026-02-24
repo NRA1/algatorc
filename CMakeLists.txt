@@ -119,7 +119,7 @@ if (WIN32)
     target_link_libraries(algatorc PRIVATE algexit_dummy)
 else ()
     target_link_libraries(algatorc PRIVATE algalloc)
-    target_link_libraries(algatorc PRIVATE algexit_dummy)
+    target_link_libraries(algatorc PRIVATE algexit)
 endif ()
 
 add_executable(algatorcpp main.cpp
@@ -188,7 +188,7 @@ add_executable(algatorcpp main.cpp
         Compilation/TranslationInput/OutputTranslationInput.hpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
 target_link_libraries(algatorcpp PRIVATE libclang clang clang-cpp)
-target_link_libraries(algatorcpp PRIVATE LLVM-21)
+target_link_libraries(algatorcpp PRIVATE LLVM)
 target_include_directories(algatorcpp PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(algatorcpp PRIVATE ${CMAKE_DL_LIBS})
 if (WIN32)
