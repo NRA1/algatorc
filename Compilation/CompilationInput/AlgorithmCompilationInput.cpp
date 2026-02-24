@@ -1,6 +1,6 @@
 #include "AlgorithmCompilationInput.hpp"
 
-#include "../Support/Error.hpp"
+#include "../../Support/Error.hpp"
 #include <Templates/Algorithm.hpp>
 #include <Templates/ErrorReporting.hpp>
 
@@ -34,7 +34,6 @@ AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()
 {
     return CompilationInput::loadDynamicLibrary<AlgorithmLibrary>();
 }
-
 
 std::string AlgorithmCompilationInput::buildInputFile()
 {

@@ -4,7 +4,7 @@
 #include <vector>
 #include <clang/Basic/DiagnosticOptions.h>
 
-#include "CompilationInput.hpp"
+#include "CompilationInput/CompilationInput.hpp"
 #include "../Execution/DynamicLibrary.hpp"
 
 #ifdef ALGATORC

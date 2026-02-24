@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <llvm/Support/VirtualFileSystem.h>
 
-#include "../Execution/DynamicLibrary.hpp"
+#include "../../Execution/DynamicLibrary.hpp"
 
 
 class CompilationInput
@@ -12,6 +12,7 @@ class CompilationInput
 public:
     virtual std::filesystem::path inputFilePath() = 0;
     virtual std::filesystem::path outputFilePath() = 0;
+    virtual std::vector<std::string> compilationDefines();
 
     std::filesystem::path objFilePath();
 

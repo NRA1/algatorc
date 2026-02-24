@@ -63,6 +63,13 @@ void Compiler::compile(CompilationInput& input)
     for (std::string& arg : default_args_)
         args.push_back(arg.c_str());
 
+    std::vector<std::string> defines = input.compilationDefines();
+    for (int i = 0; i < defines.size(); i++)
+    {
+        defines[i] = "-D" + defines[i];
+        args.push_back(defines[i].c_str());
+    }
+
     const std::string output_flag = std::string("-o") + input.outputFilePath().string();
     args.push_back(output_flag.c_str());
 
@@ -87,7 +94,7 @@ void Compiler::compile(CompilationInput& input)
 
         llvm::SmallVector<std::pair<int, const clang::driver::Command*>> failing_command;
         const int res = driver.ExecuteCompilation(*compilation, failing_command);
-        if (res != 0 || failing_command.size() > 0)
+        if (res != 0 || !failing_command.empty())
         {
             if (!std::filesystem::exists(outfile_path))
                 error(ErrorType::System, "Compilation failed but compilation output file was not created");

@@ -1,8 +1,8 @@
 #ifndef ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
 #define ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
 #include "CompilationInput.hpp"
-#include "../Execution/AlgorithmLibrary.hpp"
-#include "../Support/Configuration.hpp"
+#include "../../Execution/AlgorithmLibrary.hpp"
+#include "../../Support/Configuration.hpp"
 
 
 class AlgorithmCompilationInput final : public CompilationInput

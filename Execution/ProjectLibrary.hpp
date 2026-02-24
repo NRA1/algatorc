@@ -12,8 +12,8 @@ public:
     char* serializeOutput(void* output, unsigned int* n);
 
 private:
-    void* (*deserialize_input_func_)(char*, unsigned int);
-    char* (*serialize_output_func_)(void*, unsigned int*);
+    void* (*deserialize_input_func_)(char*, unsigned int) = nullptr;
+    char* (*serialize_output_func_)(void*, unsigned int*) = nullptr;
 };
 
 

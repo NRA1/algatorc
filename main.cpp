@@ -1,10 +1,10 @@
 #include <cstring>
 #include <filesystem>
 
-#include "Compilation/AlgorithmCompilationInput.hpp"
+#include "Compilation/CompilationInput/AlgorithmCompilationInput.hpp"
 #include "Support/Configuration.hpp"
 #include "Compilation/Compiler.hpp"
-#include "Compilation/ProjectCompilationInput.hpp"
+#include "Compilation/CompilationInput/ProjectCompilationInput.hpp"
 #include "Execution/Execution.hpp"
 #include "Support/FileManagement.hpp"
 #include "Support/Guard.hpp"

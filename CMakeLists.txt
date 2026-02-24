@@ -32,6 +32,18 @@ add_custom_command(
         DEPENDS CompilationTemplates/ErrorReporting.hpp
         VERBATIM
 )
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Templates/InputByteBuf.hpp
+        COMMAND ruby ${CMAKE_CURRENT_SOURCE_DIR}/Scripts/read_template.rb ${CMAKE_CURRENT_SOURCE_DIR}/CompilationTemplates/InputByteBuf.hpp ${CMAKE_CURRENT_BINARY_DIR}/Templates/InputByteBuf.hpp
+        DEPENDS CompilationTemplates/InputByteBuf.hpp
+        VERBATIM
+)
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Templates/OutputByteBuf.hpp
+        COMMAND ruby ${CMAKE_CURRENT_SOURCE_DIR}/Scripts/read_template.rb ${CMAKE_CURRENT_SOURCE_DIR}/CompilationTemplates/OutputByteBuf.hpp ${CMAKE_CURRENT_BINARY_DIR}/Templates/OutputByteBuf.hpp
+        DEPENDS CompilationTemplates/OutputByteBuf.hpp
+        VERBATIM
+)
 
 add_executable(algatorc main.cpp
         Support/Configuration.cpp
@@ -42,12 +54,12 @@ add_executable(algatorc main.cpp
         Compilation/Compiler.hpp
         Compilation/DummyConsumer.cpp
         Compilation/DummyConsumer.hpp
-        Compilation/CompilationInput.cpp
-        Compilation/CompilationInput.hpp
-        Compilation/ProjectCompilationInput.cpp
-        Compilation/ProjectCompilationInput.hpp
-        Compilation/AlgorithmCompilationInput.cpp
-        Compilation/AlgorithmCompilationInput.hpp
+        Compilation/CompilationInput/CompilationInput.cpp
+        Compilation/CompilationInput/CompilationInput.hpp
+        Compilation/CompilationInput/ProjectCompilationInput.cpp
+        Compilation/CompilationInput/ProjectCompilationInput.hpp
+        Compilation/CompilationInput/AlgorithmCompilationInput.cpp
+        Compilation/CompilationInput/AlgorithmCompilationInput.hpp
         Execution/DynamicLibrary.cpp
         Execution/DynamicLibrary.hpp
         Support/Guard.cpp
@@ -55,6 +67,8 @@ add_executable(algatorc main.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/InputByteBuf.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/OutputByteBuf.hpp
         Execution/ProjectLibrary.cpp
         Execution/ProjectLibrary.hpp
         Execution/AlgorithmLibrary.cpp
@@ -62,7 +76,23 @@ add_executable(algatorc main.cpp
         Support/FileManagement.hpp
         Support/FileManagement.cpp
         Execution/Execution.hpp
-        Execution/Execution.cpp)
+        Execution/Execution.cpp
+        Compilation/TranslationUnit.cpp
+        Compilation/TranslationUnit.hpp
+        Compilation/FunctionValidator/FunctionValidator.cpp
+        Compilation/FunctionValidator/FunctionValidator.hpp
+        Compilation/FunctionValidator/CSerializeOutputValidator.cpp
+        Compilation/FunctionValidator/CSerializeOutputValidator.hpp
+        Compilation/TranslationInput/TranslationInput.cpp
+        Compilation/TranslationInput/TranslationInput.hpp
+        Compilation/TranslationInput/DataConverterTranslationInput.cpp
+        Compilation/TranslationInput/DataConverterTranslationInput.hpp
+        Compilation/FunctionValidator/CDeserializeInputValidator.cpp
+        Compilation/FunctionValidator/CDeserializeInputValidator.hpp
+        Compilation/FunctionValidator/CppDeserializeInputValidator.cpp
+        Compilation/FunctionValidator/CppDeserializeInputValidator.hpp
+        Compilation/FunctionValidator/CppSerializeOutputValidator.cpp
+        Compilation/FunctionValidator/CppSerializeOutputValidator.hpp)
 target_compile_definitions(algatorc PUBLIC ALGATORC)
 target_link_libraries(algatorc PRIVATE clang clang-cpp)
 target_link_libraries(algatorc PRIVATE LLVM)
@@ -85,12 +115,12 @@ add_executable(algatorcpp main.cpp
         Compilation/Compiler.hpp
         Compilation/DummyConsumer.cpp
         Compilation/DummyConsumer.hpp
-        Compilation/CompilationInput.cpp
-        Compilation/CompilationInput.hpp
-        Compilation/ProjectCompilationInput.cpp
-        Compilation/ProjectCompilationInput.hpp
-        Compilation/AlgorithmCompilationInput.cpp
-        Compilation/AlgorithmCompilationInput.hpp
+        Compilation/CompilationInput/CompilationInput.cpp
+        Compilation/CompilationInput/CompilationInput.hpp
+        Compilation/CompilationInput/ProjectCompilationInput.cpp
+        Compilation/CompilationInput/ProjectCompilationInput.hpp
+        Compilation/CompilationInput/AlgorithmCompilationInput.cpp
+        Compilation/CompilationInput/AlgorithmCompilationInput.hpp
         Execution/DynamicLibrary.cpp
         Execution/DynamicLibrary.hpp
         Support/Guard.cpp
@@ -98,6 +128,8 @@ add_executable(algatorcpp main.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Algorithm.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/Project.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/Templates/ErrorReporting.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/InputByteBuf.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Templates/OutputByteBuf.hpp
         Execution/ProjectLibrary.cpp
         Execution/ProjectLibrary.hpp
         Execution/AlgorithmLibrary.cpp
@@ -105,9 +137,25 @@ add_executable(algatorcpp main.cpp
         Support/FileManagement.hpp
         Support/FileManagement.cpp
         Execution/Execution.hpp
-        Execution/Execution.cpp)
+        Execution/Execution.cpp
+        Compilation/TranslationUnit.cpp
+        Compilation/TranslationUnit.hpp
+        Compilation/FunctionValidator/FunctionValidator.cpp
+        Compilation/FunctionValidator/FunctionValidator.hpp
+        Compilation/FunctionValidator/CSerializeOutputValidator.cpp
+        Compilation/FunctionValidator/CSerializeOutputValidator.hpp
+        Compilation/TranslationInput/TranslationInput.cpp
+        Compilation/TranslationInput/TranslationInput.hpp
+        Compilation/TranslationInput/DataConverterTranslationInput.cpp
+        Compilation/TranslationInput/DataConverterTranslationInput.hpp
+        Compilation/FunctionValidator/CDeserializeInputValidator.cpp
+        Compilation/FunctionValidator/CDeserializeInputValidator.hpp
+        Compilation/FunctionValidator/CppDeserializeInputValidator.cpp
+        Compilation/FunctionValidator/CppDeserializeInputValidator.hpp
+        Compilation/FunctionValidator/CppSerializeOutputValidator.cpp
+        Compilation/FunctionValidator/CppSerializeOutputValidator.hpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
-target_link_libraries(algatorcpp PRIVATE clang clang-cpp)
+target_link_libraries(algatorcpp PRIVATE libclang clang clang-cpp)
 target_link_libraries(algatorcpp PRIVATE LLVM-21)
 target_include_directories(algatorcpp PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(algatorcpp PRIVATE ${CMAKE_DL_LIBS})

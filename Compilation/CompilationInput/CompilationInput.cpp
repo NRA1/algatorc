@@ -1,6 +1,11 @@
 #include "CompilationInput.hpp"
 
-#include "../Support/Error.hpp"
+#include "../../Support/Error.hpp"
+
+std::vector<std::string> CompilationInput::compilationDefines()
+{
+    return {};
+}
 
 std::filesystem::path CompilationInput::objFilePath()
 {
