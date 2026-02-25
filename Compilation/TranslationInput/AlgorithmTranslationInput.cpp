@@ -11,7 +11,7 @@ const std::filesystem::path& AlgorithmTranslationInput::sourcePath() const
 std::string AlgorithmTranslationInput::inputSource()
 {
     const std::string source = readTextFile(sourcePath());
-    const std::string input = "struct output; struct input;";
+    const std::string input = "struct output; struct input;\n";
     return input + source;
 
 }

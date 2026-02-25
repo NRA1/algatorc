@@ -11,6 +11,9 @@ const std::filesystem::path& DataConverterTranslationInput::sourcePath() const
 std::string DataConverterTranslationInput::inputSource()
 {
     const std::string source = readTextFile(sourcePath());
-    const std::string input = "struct output; struct input;";
+    std::string input = "struct output; struct input;\n";
+#ifdef ALGATORCPP
+    input += "namespace std { class istream; class ostream; }\n";
+#endif
     return input + source;
 }

@@ -13,6 +13,6 @@ bool CDeserializeInputValidator::validateReturnType(const std::string& type) con
 bool CDeserializeInputValidator::validateArguments(const std::vector<std::string>& arguments) const
 {
     if (arguments.size() != 2) return false;
-    if (arguments[0] != "char *") return false;
+    if (arguments[0] != "const char *") return false;
     return arguments[1] == "unsigned int";
 }

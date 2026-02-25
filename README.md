@@ -24,7 +24,7 @@ Path `<algator_data_root_path>/projects` must be a valid ALGator project directo
     - `output.cpp` with `class output`
     - `data_converter.cpp` with
       - one of
-        - function `input* deserialize_input(char* const unsigned int)` which receives content of `<io_filename_root>.input` and its length and deserializes it into an instance of class `input`
+        - function `input* deserialize_input(const char*, unsigned int)` which receives content of `<io_filename_root>.input` and its length and deserializes it into an instance of class `input`
         - function `input* deserialize_input(std::istream&)` which receives strem of content of `<io_filename_root>.input` and deserializes it into an instance of class `input`
       - and one of
         - function `char* serialize_output(output*, unsigned int*)`, which receives an instance of class `output`, returns its serialized representation and its representation's length (in bytes).

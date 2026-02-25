@@ -109,12 +109,12 @@ void ProjectCompilationInput::validateSourceFiles()
 #ifdef ALGATORCPP
         error(ErrorType::User, "Neither C nor C++ version of \"deserialize_input\" is defined. Define a"
                                " deserialization function either with format"
-                               " \"input* deserialize_input(char*, unsigned int)\""
+                               " \"input* deserialize_input(const char*, unsigned int)\""
                                " or format \"input* deserialize_input(std:istream&)\" in \"data_converter"
                                SOURCE_EXTENSION "\".");
 #else
         error(ErrorType::User, "\"deserialize_input\" is not defined. Define a deserialization function with format"
-                                " \"struct input* deserialize_input(char*, const unsigned int)\" in \"data_converter"
+                                " \"struct input* deserialize_input(const char*, const unsigned int)\" in \"data_converter"
                                 SOURCE_EXTENSION "\".");
 #endif
     }
@@ -152,11 +152,19 @@ std::string ProjectCompilationInput::buildInputFile()
 {
     std::stringstream stream;
     stream << ErrorReportingTemplate << "\n";
+    if (use_cpp_deserialize_input_)
+    {
+        stream << "#include <istream>\n";
+        stream << InputByteBufTemplate << "\n";
+    }
+    if (use_cpp_serialize_output_)
+    {
+        stream << "#include <ostream>\n";
+        stream << OutputByteBufTemplate << "\n";
+    }
     stream << "#include " << Configuration::inputSrcFilePath() << "\n";
     stream << "#include " << Configuration::outputSrcFilePath() << "\n";
     stream << "#include " << Configuration::dataConverterSrcFilePath() << "\n";
-    if (use_cpp_deserialize_input_) stream << InputByteBufTemplate << "\n";
-    if (use_cpp_serialize_output_) stream << OutputByteBufTemplate << "\n";
     stream << ProjectTemplate << "\n";
     return stream.str();
 }

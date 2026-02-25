@@ -7,11 +7,11 @@ void __report_error(const char* error);
 #ifdef ALGATORC
 struct input;
 struct output;
-struct input* deserialize_input(char* bytes, unsigned int n);
+struct input* deserialize_input(const char* bytes, unsigned int n);
 char* serialize_output(struct output* output, unsigned int* n);
 
 // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile // inline functions are not exported as symbols
-struct input* __deserialize_input(char* bytes, unsigned int n)
+struct input* __deserialize_input(const char* bytes, unsigned int n)
 {
     return deserialize_input(bytes, n);
 }
@@ -31,10 +31,6 @@ char* __serialize_output(struct output* output, unsigned int* n)
 
 class input;
 class output;
-
-#if defined(CPP_DESERIALIZE_INPUT) || defined(CPP_SERIALIZE_OUTPUT)
-#include <iosfwd>
-#endif
 
 #ifdef CPP_DESERIALIZE_INPUT
 input* deserialize_input(std::istream&);
@@ -62,11 +58,11 @@ extern "C" {
     }
 }
 #else
-input* deserialize_input(char*, unsigned int);
+input* deserialize_input(const char*, unsigned int);
 
 extern "C" {
     // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile // inline functions are not exported as symbols
-    struct input* __deserialize_input(char* bytes, const unsigned int n)
+    struct input* __deserialize_input(const char* bytes, const unsigned int n)
     {
         try
         {
