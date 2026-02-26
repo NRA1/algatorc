@@ -5,22 +5,14 @@
 #include <cstring>
 
 #include "Error.hpp"
+#include <vector>
 
 std::optional<Configuration> Configuration::configuration_ = std::nullopt;
 
 void Configuration::parse(int argc, char* argv[])
 {
-    if (argc < 5 || argc == 6 || argc == 8 || argc > 9)
+    if (argc < 5)
         error(ErrorType::System, "Invalid number of arguments");
-
-    std::optional<std::filesystem::path> data_root_path_opt = std::nullopt;
-    std::optional<std::filesystem::path> data_local_path_opt = std::nullopt;
-
-    if (argc == 7 || argc == 9)
-        parseFlags(argv[5], argv[6], data_root_path_opt, data_local_path_opt);
-
-    if (argc == 9)
-        parseFlags(argv[7], argv[8], data_root_path_opt, data_local_path_opt);
 
     const std::string project_name = std::string(argv[1]);
     const std::string algorithm_name = std::string(argv[2]);
@@ -43,6 +35,41 @@ void Configuration::parse(int argc, char* argv[])
         error(ErrorType::System, "<times_to_execute> too large");
     }
 
+
+    std::optional<std::filesystem::path> data_root_path_opt = std::nullopt;
+    std::optional<std::filesystem::path> data_local_path_opt = std::nullopt;
+    bool force_recompile = false;
+    bool deserialize_each_execute = false;
+
+    for (int i = 5; i < argc; i++)
+    {
+        if (strcmp(argv[i], "-dr") == 0)
+        {
+            if (argc <= i + 1)
+                error(ErrorType::System) << "Missing path after '-dr'";
+            data_root_path_opt = std::filesystem::path(argv[i + 1]);
+        }
+        else if (strcmp(argv[i], "-dl") == 0)
+        {
+            if (argc <= i + 1)
+                error(ErrorType::System) << "Missing path after '-dl'";
+
+            data_local_path_opt = std::filesystem::path(argv[i + 1]);
+        }
+        else if (strcmp(argv[i], "-c") == 0)
+        {
+            force_recompile = true;
+        }
+        else if (strcmp(argv[i], "-d") == 0)
+        {
+            deserialize_each_execute = true;
+        }
+        else
+        {
+            error(ErrorType::System) << "Invalid argument: " << argv[i];
+        }
+
+    }
 
     std::filesystem::path data_root_path;
     std::filesystem::path data_local_path;
@@ -126,30 +153,12 @@ void Configuration::parse(int argc, char* argv[])
 
     configuration_ = {times_to_execute, input_file_path, output_file_path, status_file_path, input_src_file_path,
         output_src_file_path, data_converter_src_file_path, algorithm_src_file_path, temporary_dir,
-        algorithm_bin_dir, project_bin_dir};
+        algorithm_bin_dir, project_bin_dir, force_recompile, deserialize_each_execute};
 }
 
 bool Configuration::initialized()
 {
     return configuration_.has_value();
-}
-
-void Configuration::parseFlags(const char* flag, const char* path,
-                               std::optional<std::filesystem::path>& data_root_path,
-                               std::optional<std::filesystem::path>& data_local_path)
-{
-    if (strcmp(flag, "-dr") == 0)
-    {
-        data_root_path = std::filesystem::path(path);
-    }
-    else if (strcmp(flag, "-dl") == 0)
-    {
-        data_local_path = std::filesystem::path(path);
-    }
-    else
-    {
-        error(ErrorType::System) << "Invalid argument: " << flag;
-    }
 }
 
 Configuration& Configuration::get()
@@ -163,7 +172,7 @@ Configuration::Configuration(const unsigned int times_to_execute, const std::fil
                              const std::filesystem::path& input_src_file_path, const std::filesystem::path& output_src_file_path,
                              const std::filesystem::path& data_converter_src_file_path, const std::filesystem::path& algorithm_src_file_path,
                              const std::filesystem::path& temporary_dir, const std::filesystem::path& algorithm_bin_dir,
-                             const std::filesystem::path& project_bin_dir)
+                             const std::filesystem::path& project_bin_dir, const bool force_recompile, const bool deserialize_each_execute)
 {
     times_to_execute_ = times_to_execute;
     input_file_path_ = input_file_path;
@@ -176,6 +185,8 @@ Configuration::Configuration(const unsigned int times_to_execute, const std::fil
     temporary_dir_ = temporary_dir;
     algorithm_bin_dir_ = algorithm_bin_dir;
     project_bin_dir_ = project_bin_dir;
+    force_recompile_ = force_recompile;
+    deserialize_each_execute_ = deserialize_each_execute;
 }
 
 unsigned int Configuration::timesToExecute()
@@ -231,4 +242,14 @@ const std::filesystem::path& Configuration::algorithmBinDir()
 const std::filesystem::path& Configuration::projectBinDir()
 {
     return get().project_bin_dir_;
+}
+
+bool Configuration::forceRecompile()
+{
+    return get().force_recompile_;
+}
+
+bool Configuration::deserializeEachExecute()
+{
+    return get().deserialize_each_execute_;
 }

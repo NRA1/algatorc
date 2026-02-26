@@ -9,13 +9,17 @@ C and C++ language module for the ALGator system.
 If `<algator_data_root_path>` is not passed, it has a default value of `$ALGATOR_ROOT/data_root`
 If `<algator_data_local_path>` is not passed, it has a default value of `$ALGATOR_ROOT/data_local`.
 
+The calls also accept two flags:
+- `-c` to recompile the project and algorithm even if source files have not changed
+- `-d` to deserialize a new instance of `input` before each call to `execute`
+
 Path `<algator_data_root_path>/projects` must be a valid ALGator project directory and must contain folder `PROJ-<project_name>` with contents:
 - when calling `algatorc`
   - `proj/c-src/`
     - `input.c` with `struct input`
     - `output.c` with `struct output`
     - `data_converter.c` with
-      - function `struct input* deserialize_input(char* const unsigned int)` which receives content of `<io_filename_root>.input` and its length and deserializes it into an instance of struct `input`
+      - function `struct input* deserialize_input(const char*, unsigned int)` which receives content of `<io_filename_root>.input` and its length and deserializes it into an instance of struct `input`
       - function `char* serialize_output(struct output*, unsigned int*)`, which receives an instance of struct `output`, returns its serialized representation and its representation's length (in bytes).
   - `algs/ALG-<algorithm_name>/src/algorithm.c` which contains algorithm entry function `struct output* execute(struct input*)`
 - when calling `algatorcpp`

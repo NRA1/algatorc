@@ -44,9 +44,10 @@ public:
     static const std::filesystem::path& algorithmBinDir();
     static const std::filesystem::path& projectBinDir();
 
+    static bool forceRecompile();
+    static bool deserializeEachExecute();
+
 private:
-    static void parseFlags(const char* flag, const char* path, std::optional<std::filesystem::path>& data_root_path,
-                 std::optional<std::filesystem::path>& data_local_path);
     static Configuration& get();
 
     Configuration(unsigned int times_to_execute, const std::filesystem::path& input_file_path,
@@ -54,7 +55,7 @@ private:
         const std::filesystem::path& input_src_file_path, const std::filesystem::path& output_src_file_path,
         const std::filesystem::path& data_converter_src_file_path, const std::filesystem::path& algorithm_src_file_path,
         const std::filesystem::path& temporary_dir, const std::filesystem::path& algorithm_bin_dir,
-        const std::filesystem::path& project_bin_dir);
+        const std::filesystem::path& project_bin_dir, bool force_recompile, bool deserialize_each_execute);
 
     static std::optional<Configuration> configuration_;
 
@@ -71,6 +72,9 @@ private:
     std::filesystem::path temporary_dir_;
     std::filesystem::path algorithm_bin_dir_;
     std::filesystem::path project_bin_dir_;
+
+    bool force_recompile_;
+    bool deserialize_each_execute_;
 };
 
 

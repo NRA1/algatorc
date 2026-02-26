@@ -7,6 +7,9 @@ class MemorySandbox
 public:
     MemorySandbox() = default;
     MemorySandbox(MemorySandbox&) = delete;
+    MemorySandbox(MemorySandbox&& other) noexcept;
+
+    MemorySandbox& operator=(MemorySandbox&& other) noexcept;
 
     template<typename T>
     T apply(const std::function<T()>& func);
@@ -22,8 +25,13 @@ private:
     void prepare() const;
     void cleanup();
 
+    friend void swap(MemorySandbox& first, MemorySandbox& second) noexcept;
+    void swap(MemorySandbox& other) noexcept;
+
     void** last_alloc_ = nullptr;
 };
+
+void swap(MemorySandbox& first, MemorySandbox& second) noexcept;
 
 template <typename T>
 T MemorySandbox::apply(const std::function<T()>& func)

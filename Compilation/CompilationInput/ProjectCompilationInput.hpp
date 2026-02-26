@@ -14,8 +14,6 @@ public:
     std::filesystem::path outputFilePath() override;
     std::vector<std::string> compilationDefines() override;
 
-    ProjectLibrary loadDynamicLibrary();
-
 protected:
     void validateSourceFiles();
 

@@ -5,12 +5,18 @@
 
 class AlgorithmLibrary : public DynamicLibrary
 {
+    friend class DynamicLibrary;
 public:
-    explicit AlgorithmLibrary(const std::filesystem::path& path);
+    static std::variant<AlgorithmLibrary, std::string> tryLoadFrom(const std::filesystem::path& path);
 
     void* execute(void* input);
 
 private:
+    explicit AlgorithmLibrary(void* handle);
+
+    friend void swap(AlgorithmLibrary& first, AlgorithmLibrary& second) noexcept;
+    void swap(AlgorithmLibrary& other) noexcept;
+
     void* (*execute_func_)(void*);
 };
 

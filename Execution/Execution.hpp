@@ -3,8 +3,8 @@
 
 #include "AlgorithmLibrary.hpp"
 
-#include <vector>
+#include "ProjectLibrary.hpp"
 
-std::pair<void*, std::vector<long int>> execute(AlgorithmLibrary& algorithm, void* input);
+void execute(ProjectLibrary& project, AlgorithmLibrary& algorithm);
 
 #endif //ALGATORC_TESTING_HPP

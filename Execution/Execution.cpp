@@ -1,9 +1,21 @@
 #include "Execution.hpp"
+
+#include "ProjectLibrary.hpp"
 #include "../Support/FileManagement.hpp"
 #include "../Support/Configuration.hpp"
+#include "../Support/Guard.hpp"
 
-std::pair<void*, std::vector<long int>> execute(AlgorithmLibrary& algorithm, void* input)
+void execute(ProjectLibrary& project, AlgorithmLibrary& algorithm)
 {
+    const bool deserialize_each_execute = Configuration::deserializeEachExecute();
+
+    auto [buffer, file_size] = readBinaryFile(Configuration::inputFilePath());
+    void* input = nullptr;
+    if (!deserialize_each_execute)
+        input = project.deserializeInput(buffer, file_size);
+
+    Error::setPhase(ErrorPhase::Execution);
+
     const unsigned int times_to_execute = Configuration::timesToExecute();
 
     std::vector<long int> times;
@@ -12,6 +24,9 @@ std::pair<void*, std::vector<long int>> execute(AlgorithmLibrary& algorithm, voi
     void* output = nullptr;
     for (int i = 0; i < times_to_execute; i++)
     {
+        if (deserialize_each_execute)
+            input = project.deserializeInput(buffer, file_size);
+
         const clock_t before = std::clock();
         output = algorithm.execute(input);
         const clock_t after = std::clock();
@@ -22,5 +37,20 @@ std::pair<void*, std::vector<long int>> execute(AlgorithmLibrary& algorithm, voi
             algorithm.freeAll();
     }
 
-    return {output, times};
+    Error::setPhase(ErrorPhase::Teardown);
+
+    unsigned int output_len;
+    const char* serialized_output = project.serializeOutput(output, &output_len);
+
+    writeBinaryFile(Configuration::outputFilePath(), serialized_output, output_len);
+
+    algorithm.freeAll();
+    project.freeAll();
+
+    guardInternal([&]
+    {
+        delete[] buffer;
+    });
+
+    writeSuccessStatusFile(times);
 }

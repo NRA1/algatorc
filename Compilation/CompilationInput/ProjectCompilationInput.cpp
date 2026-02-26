@@ -55,11 +55,6 @@ std::vector<std::string> ProjectCompilationInput::compilationDefines()
     return defines;
 }
 
-ProjectLibrary ProjectCompilationInput::loadDynamicLibrary()
-{
-    return CompilationInput::loadDynamicLibrary<ProjectLibrary>();
-}
-
 void ProjectCompilationInput::validateSourceFiles()
 {
     InputTranslationInput input_translation_input{};

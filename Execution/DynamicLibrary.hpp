@@ -2,6 +2,7 @@
 #define ALGATORC_DYNAMICLIBRARY_HPP
 #include <dlfcn.h>
 #include <filesystem>
+#include <variant>
 
 #include "../ALGAlloc/Algalloc.hpp"
 #include "../Support/Error.hpp"
@@ -10,10 +11,13 @@
 class DynamicLibrary
 {
 public:
+    DynamicLibrary(DynamicLibrary&& other) noexcept;
+
     void freeAll();
 
 protected:
-    explicit DynamicLibrary(const std::filesystem::path& path);
+    template<typename T>
+    static std::variant<T, std::string> tryLoadFrom(const std::filesystem::path& path);
 
     template <typename T>
     T resolve(const std::string& name);
@@ -25,12 +29,30 @@ protected:
     void (*clear_error_func_)();
 
 
+    explicit DynamicLibrary(void* handle);
     virtual ~DynamicLibrary();
+
+protected:
+    friend void swap(DynamicLibrary& first, DynamicLibrary& second) noexcept;
+    void swap(DynamicLibrary& other) noexcept;
 
 private:
     void* handle_;
     MemorySandbox sandbox_;
 };
+
+template <typename T>
+std::variant<T, std::string> DynamicLibrary::tryLoadFrom(const std::filesystem::path& path)
+{
+    if (!std::filesystem::exists(path))
+    {
+        error(ErrorType::System, "Tried to load dynamic library from path ") << path.string() << " but the path does not exist";
+    }
+
+    void* handle = dlopen(path.string().c_str(), RTLD_NOW);
+    if (handle == nullptr) return std::string(dlerror());
+    return T{handle};
+}
 
 template <typename T>
 T DynamicLibrary::resolve(const std::string& name)

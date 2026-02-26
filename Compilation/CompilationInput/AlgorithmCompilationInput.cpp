@@ -36,11 +36,6 @@ std::filesystem::path AlgorithmCompilationInput::outputFilePath()
     return Configuration::algorithmBinDir() / "algorithm" SOURCE_EXTENSION DYLIB_EXTENSION;
 }
 
-AlgorithmLibrary AlgorithmCompilationInput::loadDynamicLibrary()
-{
-    return CompilationInput::loadDynamicLibrary<AlgorithmLibrary>();
-}
-
 void AlgorithmCompilationInput::validateSourceFiles()
 {
     AlgorithmTranslationInput input{};

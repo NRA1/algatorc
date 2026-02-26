@@ -281,6 +281,18 @@ void* pvalloc(size_t size)
     return real_pvalloc(size);
 }
 
+MemorySandbox::MemorySandbox(MemorySandbox&& other) noexcept : last_alloc_(other.last_alloc_)
+{
+    other.last_alloc_ = nullptr;
+}
+
+MemorySandbox& MemorySandbox::operator=(MemorySandbox&& other) noexcept
+{
+    last_alloc_ = other.last_alloc_;
+    other.last_alloc_ = nullptr;
+    return *this;
+}
+
 template<>
 void MemorySandbox::apply<void>(const std::function<void()>& func)
 {
@@ -333,7 +345,17 @@ void MemorySandbox::free()
     last_alloc_ = nullptr;
 }
 
+void MemorySandbox::swap(MemorySandbox& other) noexcept
+{
+    std::swap(last_alloc_, other.last_alloc_);
+}
+
 MemorySandbox::~MemorySandbox()
 {
     free();
+}
+
+void swap(MemorySandbox& first, MemorySandbox& second) noexcept
+{
+    first.swap(second);
 }

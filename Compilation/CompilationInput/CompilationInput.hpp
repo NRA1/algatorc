@@ -28,23 +28,8 @@ protected:
     virtual std::string buildInputFile() = 0;
     virtual std::vector<std::filesystem::path> inputDependencies() = 0;
 
-    template<typename T>
-    T loadDynamicLibrary();
-
 private:
     std::optional<std::string> input_file_;
 };
-
-template <typename T>
-T CompilationInput::loadDynamicLibrary()
-{
-    const std::filesystem::path path = outputFilePath();
-    if (!std::filesystem::exists(path))
-    {
-        error(ErrorType::System, "Tried to load dynamic library from path ") << path.string() << " but the path does not exist";
-    }
-
-    return T(path);
-}
 
 #endif //ALGATORC_COMPILATIONINPUT_HPP

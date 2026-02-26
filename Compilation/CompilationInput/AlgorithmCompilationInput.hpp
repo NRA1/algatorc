@@ -1,7 +1,6 @@
 #ifndef ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
 #define ALGATORC_ALGORITHMCOMPILATIONINPUT_HPP
 #include "CompilationInput.hpp"
-#include "../../Execution/AlgorithmLibrary.hpp"
 #include "../../Support/Configuration.hpp"
 
 
@@ -12,8 +11,6 @@ public:
 
     std::filesystem::path inputFilePath() override;
     std::filesystem::path outputFilePath() override;
-
-    AlgorithmLibrary loadDynamicLibrary();
 
 protected:
     static void validateSourceFiles();
