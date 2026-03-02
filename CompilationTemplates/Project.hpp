@@ -7,8 +7,15 @@ void __report_error(const char* error);
 #ifdef ALGATORC
 struct input;
 struct output;
+struct input* input_deep_copy(const struct input*);
 struct input* deserialize_input(const char* bytes, unsigned int n);
 char* serialize_output(struct output* output, unsigned int* n);
+
+// ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile // inline functions are not exported as symbols
+struct input* __input_deep_copy(const struct input* input)
+{
+    return input_deep_copy(input);
+}
 
 // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile // inline functions are not exported as symbols
 struct input* __deserialize_input(const char* bytes, unsigned int n)
@@ -24,6 +31,7 @@ char* __serialize_output(struct output* output, unsigned int* n)
 
 
 
+
 #endif
 
 #ifdef ALGATORCPP
@@ -31,6 +39,30 @@ char* __serialize_output(struct output* output, unsigned int* n)
 
 class input;
 class output;
+
+input* input_deep_copy(const input*);
+
+extern "C" {
+    // ReSharper disable once CppNonInlineFunctionDefinitionInHeaderFile // inline functions are not exported as symbols
+    input* __input_deep_copy(const input* input)
+    {
+        try
+        {
+            return input_deep_copy(input);
+        }
+        catch (std::exception& e)
+        {
+            __report_error(e.what());
+            return nullptr;
+        }
+        catch (...)
+        {
+            __report_error("Unknown exception");
+            return nullptr;
+        }
+    }
+}
+
 
 #ifdef CPP_DESERIALIZE_INPUT
 input* deserialize_input(std::istream&);

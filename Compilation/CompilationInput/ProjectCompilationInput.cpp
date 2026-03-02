@@ -13,6 +13,7 @@
 #include "../CodeValidator/CppDeserializeInputValidator.hpp"
 #include "../CodeValidator/CppSerializeOutputValidator.hpp"
 #include "../CodeValidator/CSerializeOutputValidator.hpp"
+#include "../CodeValidator/InputDeepCopyValidator.hpp"
 #include "../CodeValidator/InputValidator.hpp"
 #include "../CodeValidator/OutputValidator.hpp"
 #include "../TranslationInput/DataConverterTranslationInput.hpp"
@@ -50,8 +51,8 @@ std::filesystem::path ProjectCompilationInput::outputFilePath()
 std::vector<std::string> ProjectCompilationInput::compilationDefines()
 {
     std::vector<std::string> defines;
-    if (use_cpp_deserialize_input_) defines.push_back("CPP_DESERIALIZE_INPUT");
-    if (use_cpp_serialize_output_) defines.push_back("CPP_SERIALIZE_OUTPUT");
+    if (use_cpp_deserialize_input_) defines.emplace_back("CPP_DESERIALIZE_INPUT");
+    if (use_cpp_serialize_output_) defines.emplace_back("CPP_SERIALIZE_OUTPUT");
     return defines;
 }
 
@@ -67,6 +68,17 @@ void ProjectCompilationInput::validateSourceFiles()
 #else
         error(ErrorType::User, "\"input\" structure not defined. Define algorithm input (a struct) with name \"input\""
                                " in \"input" SOURCE_EXTENSION "\".");
+#endif
+    }
+
+    if (!input_unit.contains(InputDeepCopyValidator{}))
+    {
+#ifdef ALGATORCPP
+        error(ErrorType::User, "Input copy function not defined. Define a function that makes a deep copy of \"input\" with format"
+                               " \"input* input_deep_copy(const input*)\" in \"input" SOURCE_EXTENSION "\".");
+#else
+        error(ErrorType::User, "Input copy function not defined. Define a function that makes a deep copy of \"input\" with format"
+                               " \"struct input* input_deep_copy(const struct input*)\" in \"input" SOURCE_EXTENSION "\".");
 #endif
     }
 

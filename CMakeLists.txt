@@ -109,7 +109,9 @@ add_executable(algatorc main.cpp
         Compilation/TranslationInput/InputTranslationInput.hpp
         Compilation/TranslationInput/OutputTranslationInput.cpp
         Compilation/TranslationInput/OutputTranslationInput.hpp
-        Compilation/Compilation.hpp)
+        Compilation/Compilation.hpp
+        Compilation/CodeValidator/InputDeepCopyValidator.cpp
+        Compilation/CodeValidator/InputDeepCopyValidator.hpp)
 target_compile_definitions(algatorc PUBLIC ALGATORC)
 target_link_libraries(algatorc PRIVATE libclang clang clang-cpp)
 target_link_libraries(algatorc PRIVATE LLVM)
@@ -187,7 +189,9 @@ add_executable(algatorcpp main.cpp
         Compilation/TranslationInput/InputTranslationInput.hpp
         Compilation/TranslationInput/OutputTranslationInput.cpp
         Compilation/TranslationInput/OutputTranslationInput.hpp
-        Compilation/Compilation.hpp)
+        Compilation/Compilation.hpp
+        Compilation/CodeValidator/InputDeepCopyValidator.cpp
+        Compilation/CodeValidator/InputDeepCopyValidator.hpp)
 target_compile_definitions(algatorcpp PUBLIC ALGATORCPP)
 target_link_libraries(algatorcpp PRIVATE libclang clang clang-cpp)
 target_link_libraries(algatorcpp PRIVATE LLVM)

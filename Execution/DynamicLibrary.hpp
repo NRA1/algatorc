@@ -2,6 +2,7 @@
 #define ALGATORC_DYNAMICLIBRARY_HPP
 #include <dlfcn.h>
 #include <filesystem>
+#include <stack>
 #include <variant>
 
 #include "../ALGAlloc/Algalloc.hpp"
@@ -13,6 +14,8 @@ class DynamicLibrary
 public:
     DynamicLibrary(DynamicLibrary&& other) noexcept;
 
+    void pushMemoryLifetime();
+    void popMemoryLifetime();
     void freeAll();
 
 protected:
@@ -38,7 +41,7 @@ protected:
 
 private:
     void* handle_;
-    MemorySandbox sandbox_;
+    std::stack<MemorySandbox> sandboxes_;
 };
 
 template <typename T>
@@ -72,14 +75,14 @@ template <typename T>
 T DynamicLibrary::executeInContext(const char* name, const std::function<T()>& func)
 {
     return guard<T>(name,
-        [this]{ return sandbox_.apply<char*>([this] { return error_func_(); }); },
-        [this]{ sandbox_.apply<void>([this] { clear_error_func_(); }); },
+        [this]{ return sandboxes_.top().apply<char*>([this] { return error_func_(); }); },
+        [this]{ sandboxes_.top().apply<void>([this] { clear_error_func_(); }); },
         [&] {
-            return sandbox_.apply<T>([&]()
+            return sandboxes_.top().apply<T>([&]()
             {
                 return func();
             });
-        }, [&] { sandbox_.cleanupFailedApply(); });
+        }, [&] { sandboxes_.top().cleanupFailedApply(); });
 }
 
 

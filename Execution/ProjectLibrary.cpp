@@ -4,6 +4,7 @@
 
 ProjectLibrary::ProjectLibrary(void* handle) : DynamicLibrary(handle)
 {
+    input_deep_copy_func_ = resolve<void*(*)(const void*)>("__input_deep_copy");
     deserialize_input_func_ = resolve<void*(*)(char*, unsigned int)>("__deserialize_input");
     serialize_output_func_ = resolve<char*(*)(void*, unsigned int*)>("__serialize_output");
 }
@@ -11,6 +12,14 @@ ProjectLibrary::ProjectLibrary(void* handle) : DynamicLibrary(handle)
 std::variant<ProjectLibrary, std::string> ProjectLibrary::tryLoadFrom(const std::filesystem::path& path)
 {
     return DynamicLibrary::tryLoadFrom<ProjectLibrary>(path);
+}
+
+void* ProjectLibrary::input_deep_copy(const void* input)
+{
+    return executeInContext<void*>("input_deep_copy", [&]()
+    {
+        return input_deep_copy_func_(input);
+    });
 }
 
 void* ProjectLibrary::deserializeInput(char* bytes, const unsigned int n)
