@@ -10,7 +10,7 @@ void execute(ProjectLibrary& project, AlgorithmLibrary& algorithm)
     const bool deserialize_each_execute = Configuration::deserializeEachExecute();
 
     auto [buffer, file_size] = readBinaryFile(Configuration::inputFilePath());
-    const void* input = nullptr;
+    void* input = nullptr;
     if (!deserialize_each_execute)
         input = project.deserializeInput(buffer, file_size);
 
@@ -28,6 +28,7 @@ void execute(ProjectLibrary& project, AlgorithmLibrary& algorithm)
         void* iter_input = nullptr;
         if (deserialize_each_execute)
             iter_input = project.deserializeInput(buffer, file_size);
+        else if (i == times_to_execute - 1) iter_input = input;
         else iter_input = project.input_deep_copy(input);
 
         const clock_t before = std::clock();
