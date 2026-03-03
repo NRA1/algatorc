@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.31)
 project(algatorc)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED 17)
 
 add_subdirectory(ALGAlloc)
 add_subdirectory(ALGExit)
@@ -124,6 +125,7 @@ else ()
     target_link_libraries(algatorc PRIVATE algalloc)
     target_link_libraries(algatorc PRIVATE algexit)
 endif ()
+target_compile_features(algatorc PUBLIC cxx_std_17)
 
 add_executable(algatorcpp main.cpp
         Support/Configuration.cpp
@@ -204,3 +206,4 @@ else ()
     target_link_libraries(algatorcpp PRIVATE algalloc)
     target_link_libraries(algatorcpp PRIVATE algexit)
 endif ()
+target_compile_features(algatorcpp PUBLIC cxx_std_17)
