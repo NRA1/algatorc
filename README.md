@@ -50,6 +50,7 @@ AlgatorC outputs
 ## Dependencies
 - LLVM 21.1
 - Clang 21.1
+- libClang 21.1
 
 Additionally on Windows
 - dlfcn-win32
@@ -60,6 +61,22 @@ Additionally on Windows
 
 Linux: gcc \
 Windows: mingw64
+
+## Building
+### Ubuntu
+```
+git clone https://github.com/NRA1/algatorc.git
+cd algatorc
+mkdir build
+cd build
+apt install build-essential cmake clang-21 libclang-21-dev ruby
+ln -s /usr/lib/llvm-21/include/clang /usr/local/include/clang
+ln -s /usr/lib/llvm-21/include/llvm /usr/local/include/llvm
+ln -s /usr/lib/llvm-21/include/llvm-c /usr/local/include/llvm-c
+ln -s /usr/lib/llvm-21/include/clang-c /usr/local/include/clang-c
+cmake ..
+make
+```
 
 ## Platform support
 AlgatorC is primarily intended to run on Linux. \
