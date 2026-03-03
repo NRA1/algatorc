@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
 
 require 'pathname'
+require 'fileutils'
 
 input_file = ARGV[0]
 output_file = ARGV[1]
@@ -26,4 +27,5 @@ output += "#include <string>\n"
 output += "inline const std::string #{filename_root} = std::string(\"#{input}\");\n"
 output += "#endif\n"
 
+FileUtils.mkdir_p Pathname.new(output_file).dirname
 File.write(output_file, output)
