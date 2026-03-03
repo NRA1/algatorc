@@ -2,6 +2,7 @@
 #define ALGATORC_CONFIGURATION_HPP
 #include <filesystem>
 #include <ostream>
+#include <optional>
 
 #ifdef ALGATORC
 
